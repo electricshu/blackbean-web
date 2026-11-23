@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxODA5MjUxMjIwNTk5Mzk2NTk3OCIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzlmODI1OWVlMjkyZDVlN2RfYmxhY2tiZWFuX3BvcnRhbC5odG1sLTcwNCJ9LCJleHAiOjE3OTU0MjI4MjEsImlhdCI6MTc5NTQxOTIyMSwiYWxnIjoiUlMyNTYifQ.ZjjVrN-VEhswWNaQ6VJppYOGUtyNpnCreimPXm6VGiPmQVMfPpcylTpHOx2rJsJkYb4dD9rS38d6H1NweNcZTJCasuvkfndRO1aHQZt14MLtC9rwZ1KcfeYEoeKOXzhLqe2l4_3WlT-8eTn3W4mMQrKBSLiB2hz2GKFg4KRdMG-nOkmHNMV8PY6TurySF4v7z2KwNlSEfoMKzp451RoLZYszqo8uHl4xLOIoFnDJy20UVGK84jUftNeD_G6UO5gwK5YtlBjROkKn8vgWymwZppZ183cudrZ_H46G3bcbyRr7CgJqe9A7hbISM5F7FQa9M5JNohHso9jHyG4eMeHgsg","c_9f8259ee292d5e7d_blackbean_portal.html-704")</script><script data-bard-client-injected="true">
+  document.addEventListener('input', (event) => {
+    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
+      const clonedDoc = document.cloneNode(true);
+      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
+      injectedScripts.forEach(el => el.remove());
+      window.parent.postMessage({
+        type: 'inlineEdit',
+        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
+      }, '*');
+    }
+  });
+</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
+  ]);
+  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
+
+  function isTextEntryTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' || target.isContentEditable === true;
+  }
+
+  // An element absorbs the key only if it both overflows on the axis being
+  // scrolled and is configured to scroll on that axis. The cheap dimension
+  // test runs first because getComputedStyle forces a style recalc, and this
+  // runs on every keypress. Each axis is read from its own longhand: the
+  // 'overflow' shorthand serializes as two values when the axes differ, which
+  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
+  function canScroll(node, horizontal) {
+    const overflows = horizontal ? node.scrollWidth > node.clientWidth
+                                 : node.scrollHeight > node.clientHeight;
+    if (!overflows) return false;
+    const style = window.getComputedStyle(node);
+    const overflow = horizontal ? style.overflowX : style.overflowY;
+    return overflow === 'auto' || overflow === 'scroll';
+  }
+
+  // Walks up from the event target so nested scrollers keep their behavior.
+  // <body> is included because pages that pin the root height make it the
+  // scroll container.
+  function hasScrollableAncestor(target, horizontal) {
+    let node = target;
+    while (node && node !== document.documentElement) {
+      if (canScroll(node, horizontal)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function rootCanScroll(horizontal) {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (!scroller) return false;
+    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
+    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
+                      : scroller.scrollHeight > window.innerHeight + 1;
+  }
+
+  window.addEventListener('keydown', function(event) {
+    if (!SCROLL_KEYS.has(event.key)) return;
+    if (event.defaultPrevented) return;
+    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
+    // reserved for shortcuts, so none of them are scroll intent.
+    if (event.altKey || event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    if (isTextEntryTarget(target)) return;
+
+    // Anything that can still absorb the scroll gets to keep it.
+    const horizontal = HORIZONTAL_KEYS.has(event.key);
+    if (rootCanScroll(horizontal)) return;
+    if (hasScrollableAncestor(target, horizontal)) return;
+
+    event.preventDefault();
+  }, {capture: true, passive: false});
+})();</script><script data-bard-client-injected="true">(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script data-bard-client-injected="true">
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
+function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
+let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
+null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
+G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
+16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
+(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
+(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
+url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
+</script><script data-bard-client-injected="true">((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
+  const OVERLAY_SELECTOR =
+    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
+
+  function isVisibleOverlay(element) {
+    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
+      return false;
+    }
+    if (window.getComputedStyle(element).visibility === 'hidden') {
+      return false;
+    }
+    for (let cur = element; cur; cur = cur.parentElement) {
+      if (window.getComputedStyle(cur).display === 'none') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function hasOpenOverlay() {
+    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
+    for (let i = 0; i < candidates.length; i++) {
+      if (isVisibleOverlay(candidates[i])) {
+        return true;
+      }
+    }
+    try {
+      if (document.querySelector('[popover]:popover-open')) {
+        return true;
+      }
+    } catch (e) {
+      // Ignore engines that do not support :popover-open.
+    }
+    return false;
+  }
+
+  function isNonEmptySearchInput(target) {
+    return (
+      Boolean(target) &&
+      target.tagName === 'INPUT' &&
+      typeof target.type === 'string' &&
+      target.type.toLowerCase() === 'search' &&
+      typeof target.value === 'string' &&
+      target.value.length > 0
+    );
+  }
+
+  function shouldIgnoreEscape(event) {
+    return (
+      event.key !== 'Escape' ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.isComposing ||
+      event.repeat ||
+      event.keyCode === 229 ||
+      isNonEmptySearchInput(event.target)
+    );
+  }
+
+  let shouldIgnoreCaptureState = false;
+
+  window.addEventListener(
+    'keydown',
+    function(event) {
+      if (event.key === 'Escape') {
+        shouldIgnoreCaptureState =
+          hasOpenOverlay() || isNonEmptySearchInput(event.target);
+      }
+    },
+    {capture: true},
+  );
+
+  window.addEventListener('keydown', function(event) {
+    if (
+      shouldIgnoreEscape(event) ||
+      event.defaultPrevented ||
+      shouldIgnoreCaptureState
+    ) {
+      return;
+    }
+    const wasBlockedOnCapture = shouldIgnoreCaptureState;
+    queueMicrotask(function() {
+      if (event.defaultPrevented || wasBlockedOnCapture) {
+        return;
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({'type': 'escapeKey'}, '*');
+      }
+    });
+  });
+})();</script><script data-bard-client-injected="true">(function() {
+  function normalizeSlug(str) {
+    try {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^p{L}p{N}s_-]/gu, '')
+        .replace(/s+/g, '-');
+    } catch (e) {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9s_-]/g, '')
+        .replace(/s+/g, '-');
+    }
+  }
+
+  function findTargetElement(hash) {
+    if (!hash || hash === '#') {
+      return null;
+    }
+    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
+    let decodedId = rawId;
+    try {
+      decodedId = decodeURIComponent(rawId);
+    } catch (e) {
+      // Ignore URI malformed errors.
+    }
+
+    // 1. Direct ID match (raw and decoded).
+    let target = document.getElementById(rawId) || document.getElementById(decodedId);
+    if (target) {
+      return target;
+    }
+
+    // 2. Name attribute match (<a name="...">).
+    try {
+      if (typeof CSS !== 'undefined' && CSS.escape) {
+        target =
+          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
+          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
+      } else {
+        const namedElements = document.getElementsByName(rawId);
+        if (namedElements && namedElements.length > 0) {
+          return namedElements[0];
+        }
+      }
+    } catch (e) {
+      // Ignore querySelector syntax errors.
+    }
+    if (target) {
+      return target;
+    }
+
+    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
+    const targetSlug = normalizeSlug(decodedId);
+    if (targetSlug) {
+      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (normalizeSlug(heading.textContent || '') === targetSlug) {
+          return heading;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
+    if (!anchor) {
+      return;
+    }
+
+    const href = anchor.getAttribute('href');
+    if (
+      !href ||
+      href.trim().toLowerCase().startsWith('javascript:') ||
+      anchor.hasAttribute('download')
+    ) {
+      return;
+    }
+
+    // Check if the link is an in-page hash / anchor link.
+    if (href.startsWith('#')) {
+      event.preventDefault();
+      const targetElement = findTargetElement(href);
+      if (targetElement) {
+        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+      return;
+    }
+
+    // Check if the URL has the same origin/pathname but with a hash.
+    try {
+      const url = new URL(anchor.href, window.location.href);
+      if (
+        url.hash &&
+        url.origin === window.location.origin &&
+        url.pathname === window.location.pathname
+      ) {
+        event.preventDefault();
+        const targetElement = findTargetElement(url.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+        return;
+      }
+    } catch (e) {
+      // Fall through if URL parsing fails.
+    }
+
+    // For all external or full navigation links, prevent iframe-level navigation
+    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
+    // safely in a new tab/window.
+    if (anchor.target !== '_blank') {
+      event.preventDefault();
+      window.open(anchor.href, '_blank', 'noopener,noreferrer');
+    }
+  }, {capture: true});
+})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="blackbean-portal-config" id="portal-config-meta" content="{&quot;winUrl&quot;:&quot;https://github.com/electricshu/COWSAP/releases/download/untagged-3099cafc3bd99e7add76/KOVA.Setup.1.0.0.exe&quot;,&quot;apkUrl&quot;:&quot;&quot;,&quot;webUrl&quot;:&quot;https://papaya-boba-9d8526.netlify.app&quot;,&quot;contact&quot;:&quot;blackbean.office.studio@gmail.com&quot;,&quot;hideCeoBtn&quot;:true}">
+  <title>BlackBean Studio — Cổng Tải Ứng Dụng COWSAP Chính Thức</title>
+
+  <!-- Inline Favicon: BlackBean Minimal Bean -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none'%3E%3Crect width='200' height='200' rx='48' fill='%23E5EFE9'/%3E%3Cg transform='rotate(-24 100 100)'%3E%3Cpath d='M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z' fill='%23232A26'/%3E%3Cpath d='M 79 84 C 87 94, 87 106, 79 116' stroke='%23E5EFE9' stroke-width='7.5' stroke-linecap='round'/%3E%3Cpath d='M 118 63 C 129 73, 134 86, 133 101' stroke='%236F9380' stroke-width='6.5' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', '"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', '"Be Vietnam Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            canvas: '#F7F6F2',
+            canvas2: '#F0EEE7',
+            surface: '#FFFFFF',
+            hairline: '#E8E6DF',
+            ink: '#1E2421',
+            muted: '#6C736E',
+            sage: {
+              DEFAULT: '#4E6E5D',
+              hover: '#3F5B4C',
+              soft: '#E5EFE9',
+              border: '#CFE0D6',
+              text: '#2F5241',
+            },
+            slatep: {
+              soft: '#E3EAF0',
+              text: '#2D4A63',
+              border: '#CBD8E4',
+            },
+            sand: {
+              soft: '#F2EAE1',
+              text: '#6B4F35',
+              border: '#E4D5C5',
+            },
+            lavender: {
+              soft: '#EBE6F2',
+              text: '#4B3B6B',
+              border: '#D8CEE6',
+            }
+          },
+          boxShadow: {
+            soft: '0 2px 12px rgba(28, 35, 33, 0.04)',
+            'soft-md': '0 10px 30px rgba(28, 35, 33, 0.06)',
+            'soft-lg': '0 20px 48px rgba(28, 35, 33, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" crossorigin="anonymous"></script>
+
+  <style>
+    :root { --spring: cubic-bezier(0.22, 1, 0.36, 1); }
+
+    body {
+      background-color: #F7F6F2;
+      color: #1E2421;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .tactile {
+      transition: transform 0.22s var(--spring), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.22s ease, color 0.2s ease;
+      will-change: transform;
+    }
+    .tactile:hover { transform: translateY(-1.5px); }
+    .tactile:active { transform: scale(0.965) translateY(0); }
+
+    .tactile-card {
+      background: #FFFFFF;
+      border: 1px solid #E8E6DF;
+      box-shadow: 0 2px 12px rgba(28, 35, 33, 0.035);
+      transition: transform 0.26s var(--spring), border-color 0.22s ease, box-shadow 0.26s ease;
+    }
+    .tactile-card:hover {
+      transform: translateY(-3px);
+      border-color: #CFE0D6;
+      box-shadow: 0 14px 32px rgba(28, 35, 33, 0.065);
+    }
+
+    /* Pomeranian Micro-animations */
+    @keyframes pomBlink { 0%, 44%, 48%, 94%, 100% { transform: scaleY(1); } 46%, 96% { transform: scaleY(0.12); } }
+    @keyframes pomTailSway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4.5deg); } }
+    @keyframes pomBreathe { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-1.2px); } }
+    .pom-eyes { transform-box: fill-box; transform-origin: center; animation: pomBlink 5.2s ease-in-out infinite; }
+    .pom-tail { transform-box: fill-box; transform-origin: 25% 75%; animation: pomTailSway 3.2s ease-in-out infinite; }
+    .pom-head-group { transform-box: fill-box; transform-origin: bottom center; animation: pomBreathe 3.8s ease-in-out infinite; }
+
+    /* Modal Transitions */
+    .modal-backdrop { opacity: 0; pointer-events: none; transition: opacity 0.24s ease; }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .modal-panel { transform: scale(0.96) translateY(10px); opacity: 0; transition: transform 0.28s var(--spring), opacity 0.22s ease; }
+    .modal-backdrop.open .modal-panel { transform: scale(1) translateY(0); opacity: 1; }
+
+    /* Toast */
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(8px) scale(0.96); }
+    }
+    .toast-enter { animation: toastIn 0.28s var(--spring) forwards; }
+    .toast-exit { animation: toastOut 0.22s ease forwards; }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Be Vietnam Pro", "Plus Jakarta Sans", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:"JetBrains Mono", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.bottom-5{bottom:1.25rem}.right-5{right:1.25rem}.top-0{top:0px}.z-30{z-index:30}.z-50{z-index:50}.z-\[70\]{z-index:70}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-1\.5{margin-top:0.375rem}.mt-2{margin-top:0.5rem}.mt-2\.5{margin-top:0.625rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-9{height:2.25rem}.h-full{height:100%}.max-h-\[90vh\]{max-height:90vh}.w-10{width:2.5rem}.w-12{width:3rem}.w-14{width:3.5rem}.w-2{width:0.5rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.max-w-6xl{max-width:72rem}.max-w-lg{max-width:32rem}.max-w-xs{max-width:20rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-10{gap:2.5rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-3\.5{gap:0.875rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.gap-7{gap:1.75rem}.gap-x-6{column-gap:1.5rem}.gap-y-2{row-gap:0.5rem}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.scroll-smooth{scroll-behavior:smooth}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-full{border-radius:9999px}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-y{border-top-width:1px;border-bottom-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-hairline{--tw-border-opacity:1;border-color:rgb(232 230 223 / var(--tw-border-opacity, 1))}.border-sage-border{--tw-border-opacity:1;border-color:rgb(207 224 214 / var(--tw-border-opacity, 1))}.border-sand-border{--tw-border-opacity:1;border-color:rgb(228 213 197 / var(--tw-border-opacity, 1))}.border-slatep-border{--tw-border-opacity:1;border-color:rgb(203 216 228 / var(--tw-border-opacity, 1))}.bg-canvas{--tw-bg-opacity:1;background-color:rgb(247 246 242 / var(--tw-bg-opacity, 1))}.bg-canvas\/70{background-color:rgb(247 246 242 / 0.7)}.bg-canvas\/90{background-color:rgb(247 246 242 / 0.9)}.bg-canvas2\/60{background-color:rgb(240 238 231 / 0.6)}.bg-ink\/35{background-color:rgb(30 36 33 / 0.35)}.bg-lavender-soft{--tw-bg-opacity:1;background-color:rgb(235 230 242 / var(--tw-bg-opacity, 1))}.bg-sage{--tw-bg-opacity:1;background-color:rgb(78 110 93 / var(--tw-bg-opacity, 1))}.bg-sage-soft{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.bg-sand-soft{--tw-bg-opacity:1;background-color:rgb(242 234 225 / var(--tw-bg-opacity, 1))}.bg-slatep-soft{--tw-bg-opacity:1;background-color:rgb(227 234 240 / var(--tw-bg-opacity, 1))}.bg-surface{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.pb-16{padding-bottom:4rem}.pb-4{padding-bottom:1rem}.pt-1{padding-top:0.25rem}.pt-12{padding-top:3rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.pt-5{padding-top:1.25rem}.text-center{text-align:center}.font-display{font-family:"Plus Jakarta Sans", "Be Vietnam Pro", sans-serif}.font-mono{font-family:"JetBrains Mono", monospace}.font-sans{font-family:"Be Vietnam Pro", "Plus Jakarta Sans", sans-serif}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-\[1\.14\]{line-height:1.14}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.16em\]{letter-spacing:0.16em}.tracking-\[0\.18em\]{letter-spacing:0.18em}.tracking-tight{letter-spacing:-0.025em}.text-ink{--tw-text-opacity:1;color:rgb(30 36 33 / var(--tw-text-opacity, 1))}.text-lavender-text{--tw-text-opacity:1;color:rgb(75 59 107 / var(--tw-text-opacity, 1))}.text-muted{--tw-text-opacity:1;color:rgb(108 115 110 / var(--tw-text-opacity, 1))}.text-sage{--tw-text-opacity:1;color:rgb(78 110 93 / var(--tw-text-opacity, 1))}.text-sage-text{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.text-sand-text{--tw-text-opacity:1;color:rgb(107 79 53 / var(--tw-text-opacity, 1))}.text-slatep-text{--tw-text-opacity:1;color:rgb(45 74 99 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.accent-\[\#4E6E5D\]{accent-color:#4E6E5D}.shadow-soft{--tw-shadow:0 2px 12px rgba(28, 35, 33, 0.04);--tw-shadow-colored:0 2px 12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-soft-lg{--tw-shadow:0 20px 48px rgba(28, 35, 33, 0.08);--tw-shadow-colored:0 20px 48px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-soft-md{--tw-shadow:0 10px 30px rgba(28, 35, 33, 0.06);--tw-shadow-colored:0 10px 30px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-\[2px\]{--tw-backdrop-blur:blur(2px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.selection\:bg-sage-soft *::selection{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.selection\:text-sage-text *::selection{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.selection\:bg-sage-soft::selection{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.selection\:text-sage-text::selection{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.hover\:border-sage-border:hover{--tw-border-opacity:1;border-color:rgb(207 224 214 / var(--tw-border-opacity, 1))}.hover\:border-sand-border:hover{--tw-border-opacity:1;border-color:rgb(228 213 197 / var(--tw-border-opacity, 1))}.hover\:bg-canvas:hover{--tw-bg-opacity:1;background-color:rgb(247 246 242 / var(--tw-bg-opacity, 1))}.hover\:bg-hairline\/60:hover{background-color:rgb(232 230 223 / 0.6)}.hover\:bg-sage-hover:hover{--tw-bg-opacity:1;background-color:rgb(63 91 76 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-soft:hover{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.hover\:bg-sand-soft:hover{--tw-bg-opacity:1;background-color:rgb(242 234 225 / var(--tw-bg-opacity, 1))}.hover\:text-ink:hover{--tw-text-opacity:1;color:rgb(30 36 33 / var(--tw-text-opacity, 1))}.hover\:text-sand-text:hover{--tw-text-opacity:1;color:rgb(107 79 53 / var(--tw-text-opacity, 1))}.focus\:border-sage:focus{--tw-border-opacity:1;border-color:rgb(78 110 93 / var(--tw-border-opacity, 1))}.focus\:bg-white:focus{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:w-auto{width:auto}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-end{align-items:flex-end}.sm\:p-7{padding:1.75rem}.sm\:p-8{padding:2rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:py-20{padding-top:5rem;padding-bottom:5rem}.sm\:pb-24{padding-bottom:6rem}.sm\:pt-20{padding-top:5rem}.sm\:text-left{text-align:left}.sm\:text-4xl{font-size:2.25rem;line-height:2.5rem}.sm\:text-5xl{font-size:3rem;line-height:1}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:flex{display:flex}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:mx-0{margin-left:0px;margin-right:0px}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:justify-start{justify-content:flex-start}.lg\:gap-12{gap:3rem}.lg\:text-left{text-align:left}}</style></head>
+<body class="font-sans selection:bg-sage-soft selection:text-sage-text">
+
+  <!-- 1. THANH ĐIỀU HƯỚNG (NAVBAR) -->
+  <header class="sticky top-0 z-30 bg-canvas/90 backdrop-blur-md border-b border-hairline">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <a href="#top" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <rect width="200" height="200" rx="48" fill="#E5EFE9"></rect>
+            <rect x="2" y="2" width="196" height="196" rx="46" stroke="#C9DDD1" stroke-width="4"></rect>
+            <g transform="rotate(-24 100 100)">
+              <path d="M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z" fill="#232A26"></path>
+              <path d="M 79 84 C 87 94, 87 106, 79 116" stroke="#E5EFE9" stroke-width="8" stroke-linecap="round"></path>
+              <path d="M 118 63 C 129 73, 134 86, 133 101" stroke="#6F9380" stroke-width="7" stroke-linecap="round"></path>
+              <circle cx="129" cy="117" r="4" fill="#6F9380"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="leading-tight">
+          <span class="font-display font-bold text-base tracking-tight text-ink">Black<span class="text-sage">Bean</span></span>
+          <span class="block text-[10px] uppercase tracking-[0.16em] text-muted font-medium">Digital Studio</span>
+        </div>
+      </a>
+
+      <!-- Nav Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
+        <a href="#download" class="hover:text-ink transition-colors">Tải COWSAP</a>
+        <a href="#features" class="hover:text-ink transition-colors">Tính năng</a>
+        <a href="#guide" class="hover:text-ink transition-colors">Hướng dẫn cài</a>
+        <a href="#roadmap" class="hover:text-ink transition-colors">Hệ sinh thái</a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2">
+        <button id="ceo-config-btn" onclick="openConfigModal()" class="tactile px-3 py-2 rounded-xl bg-surface hover:bg-sand-soft border border-hairline hover:border-sand-border text-xs font-semibold text-muted hover:text-sand-text flex items-center gap-1.5" title="Dành cho CEO baebless cấu hình link tải và xuất web">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="settings-2" aria-hidden="true" class="lucide lucide-settings-2 w-3.5 h-3.5"><path d="M14 17H5"></path><path d="M19 7h-9"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg>
+          <span class="hidden sm:inline">Cài link (CEO)</span>
+        </button>
+        <a href="#download" class="tactile px-4 py-2 rounded-xl bg-sage hover:bg-sage-hover text-xs sm:text-sm font-semibold text-white shadow-soft flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-3.5 h-3.5"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+          <span>Tải ngay</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION -->
+  <section id="top" class="pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <!-- Left Copy -->
+      <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sage-soft border border-sage-border text-sage-text text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-sage"></span>
+          <span>Phát hành chính thức · <strong>COWSAP v1.0</strong> bởi BlackBean</span>
+        </div>
+
+        <h1 class="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-ink leading-[1.14]">
+          Một két sắt tĩnh lặng cho <span class="text-sage">mọi mật khẩu</span> của bạn.
+        </h1>
+
+        <p class="text-base sm:text-lg text-muted leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          Quản lý an toàn tài khoản Ngân hàng, Steam, Game và Mạng xã hội trong một ứng dụng tối giản, nhẹ nhàng và mã hóa cục bộ chuẩn <strong>AES-GCM 256-bit</strong>. Không quảng cáo, không theo dõi.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
+          <a href="#download" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-sage hover:bg-sage-hover text-white font-semibold text-sm shadow-soft-md flex items-center justify-center gap-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download-cloud" aria-hidden="true" class="lucide lucide-download-cloud w-4 h-4"><path d="M12 13v8l-4-4"></path><path d="m12 21 4-4"></path><path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284"></path></svg>
+            <span>Tải COWSAP miễn phí</span>
+          </a>
+          <button onclick="openWebAppLink()" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink font-semibold text-sm shadow-soft flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="smartphone" aria-hidden="true" class="lucide lucide-smartphone w-4 h-4 text-sage"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect><path d="M12 18h.01"></path></svg>
+            <span>Mở bản Web / iPhone</span>
+          </button>
+        </div>
+
+        <div class="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-muted">
+          <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true" class="lucide lucide-shield-check w-4 h-4 text-sage"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg> Mã hóa 100% cục bộ</span>
+          <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="wifi-off" aria-hidden="true" class="lucide lucide-wifi-off w-4 h-4 text-sage"><path d="M12 20h.01"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path><path d="M5 12.859a10 10 0 0 1 5.17-2.69"></path><path d="M19 12.859a10 10 0 0 0-2.007-1.523"></path><path d="M2 8.82a15 15 0 0 1 4.177-2.643"></path><path d="M22 8.82a15 15 0 0 0-11.288-3.764"></path><path d="m2 2 20 20"></path></svg> Chạy độc lập Offline</span>
+          <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-4 h-4 text-sage"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg> Hoàn toàn miễn phí</span>
+        </div>
+      </div>
+
+      <!-- Right Visual Card (COWSAP App Showcase) -->
+      <div class="lg:col-span-5">
+        <div class="bg-surface border border-hairline rounded-[2rem] p-6 sm:p-7 shadow-soft-lg space-y-5 relative">
+          <!-- Top App Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-hairline">
+            <div class="flex items-center gap-3.5">
+              <!-- COWSAP Pomeranian Animated Logo -->
+              <div class="w-14 h-14 shrink-0 rounded-2xl overflow-hidden shadow-soft">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                  <defs>
+                    <clipPath id="clip_hero"><rect width="100" height="100" rx="24"></rect></clipPath>
+                    <linearGradient id="bg_hero" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#9EC0A2"></stop><stop offset="100%" stop-color="#6D9574"></stop>
+                    </linearGradient>
+                    <radialGradient id="fur_hero" cx="50%" cy="32%" r="65%">
+                      <stop offset="0%" stop-color="#F1AE6B"></stop><stop offset="60%" stop-color="#DF8E49"></stop><stop offset="100%" stop-color="#C67432"></stop>
+                    </radialGradient>
+                    <radialGradient id="mane_hero" cx="50%" cy="38%" r="62%">
+                      <stop offset="0%" stop-color="#FFFDF9"></stop><stop offset="68%" stop-color="#F7ECE0"></stop><stop offset="100%" stop-color="#E7CEB5"></stop>
+                    </radialGradient>
+                  </defs>
+                  <g clip-path="url(#clip_hero)">
+                    <rect width="100" height="100" fill="url(#bg_hero)"></rect>
+                    <circle cx="16" cy="18" r="16" fill="#E6F2E4" fill-opacity="0.34"></circle>
+                    <circle cx="86" cy="14" r="14" fill="#E6F2E4" fill-opacity="0.38"></circle>
+                    <ellipse cx="50" cy="100" rx="64" ry="18" fill="#58825D" fill-opacity="0.55"></ellipse>
+                    <g class="pom-tail">
+                      <path d="M52 24C56 10 71 6 82 14C92 21 96 36 90 48C86 56 76 58 68 54L52 24Z" fill="#FFFDF9"></path>
+                    </g>
+                    <g class="pom-head-group">
+                      <path d="M12 56C6 68 12 86 24 98H78C90 86 94 68 88 54C84 44 76 38 66 36H34C24 38 16 45 12 56Z" fill="url(#fur_hero)"></path>
+                      <path d="M16 55C12 62 14 73 20 81C23 89 31 96 40 99H60C69 96 77 89 80 81C86 73 88 62 84 55C80 46 70 40 50 40C30 40 20 46 16 55Z" fill="url(#mane_hero)"></path>
+                      <path d="M24 37L26 16C26.5 11.5 31.8 10.2 34.8 13.5L45 25Z" fill="url(#fur_hero)"></path>
+                      <path d="M28 33L29.5 18.5C29.8 16.5 32.2 16 33.6 17.5L40 25Z" fill="#FCE9D8"></path>
+                      <path d="M76 37L74 16C73.5 11.5 68.2 10.2 65.2 13.5L55 25Z" fill="url(#fur_hero)"></path>
+                      <path d="M72 33L70.5 18.5C70.2 16.5 67.8 16 66.4 17.5L60 25Z" fill="#FCE9D8"></path>
+                      <path d="M50 20C36 20 25 27 21 38C15 43 14 54 20 61C24 70 36 76 50 76C64 76 76 70 80 61C86 54 85 43 79 38C75 27 64 20 50 20Z" fill="url(#fur_hero)"></path>
+                      <path d="M50 37C44 37 40 34 33 35C24 36 18 45 20 56C22 66 34 74 50 74C66 74 78 66 80 56C82 45 76 36 67 35C60 34 56 37 50 37Z" fill="url(#mane_hero)"></path>
+                      <ellipse cx="29" cy="54" rx="5.2" ry="3.2" fill="#F4A3A8" opacity="0.38"></ellipse>
+                      <ellipse cx="71" cy="54" rx="5.2" ry="3.2" fill="#F4A3A8" opacity="0.38"></ellipse>
+                      <g class="pom-eyes">
+                        <circle cx="37.5" cy="47.5" r="4.6" fill="#231915"></circle>
+                        <circle cx="36.0" cy="45.9" r="1.7" fill="#FFFFFF"></circle>
+                        <circle cx="62.5" cy="47.5" r="4.6" fill="#231915"></circle>
+                        <circle cx="61.0" cy="45.9" r="1.7" fill="#FFFFFF"></circle>
+                      </g>
+                      <path d="M45.8 52.8C45.8 51.3 47.4 50.6 50 50.6C52.6 50.6 54.2 51.3 54.2 52.8C54.2 54.8 51.8 57.1 50 57.1C48.2 57.1 45.8 54.8 45.8 52.8Z" fill="#1F1917"></path>
+                      <path d="M38.5 57.5C41.8 62.8 46.5 64.5 50 64.5C53.5 64.5 58.2 62.8 61.5 57.5C58.8 59.6 54.5 60.2 50 59.5C45.5 60.2 41.2 59.6 38.5 57.5Z" fill="#2C1D1A"></path>
+                      <path d="M46.2 60.8H53.8V66.4C53.8 68.7 52.1 70.4 50 70.4C47.9 70.4 46.2 68.7 46.2 66.4V60.8Z" fill="#EE829B"></path>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-display font-bold text-lg text-ink leading-tight">COWSAP</h2>
+                <p class="text-xs text-muted">by BlackBean · v1.0.0</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-sage-soft text-sage-text text-[11px] font-semibold">
+              AES-256
+            </span>
+          </div>
+
+          <!-- Mockup Account Rows -->
+          <div class="space-y-2.5">
+            <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-sage-soft text-sage-text flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="landmark" aria-hidden="true" class="lucide lucide-landmark w-4 h-4"><path d="M10 18v-7"></path><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"></path><path d="M14 18v-7"></path><path d="M18 18v-7"></path><path d="M3 22h18"></path><path d="M6 18v-7"></path></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-ink truncate">Vietcombank Digibank</p>
+                  <p class="text-xs font-mono text-muted">••••••••••••</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-medium text-sage-text bg-sage-soft px-2 py-0.5 rounded-md shrink-0">Siêu mạnh</span>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-slatep-soft text-slatep-text flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="gamepad-2" aria-hidden="true" class="lucide lucide-gamepad-2 w-4 h-4"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-ink truncate">Steam Account</p>
+                  <p class="text-xs font-mono text-muted">••••••••••••••</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-medium text-sage-text bg-sage-soft px-2 py-0.5 rounded-md shrink-0">Siêu mạnh</span>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-sand-soft text-sand-text flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="at-sign" aria-hidden="true" class="lucide lucide-at-sign w-4 h-4"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"></path></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-ink truncate">Gmail &amp; Mạng xã hội</p>
+                  <p class="text-xs font-mono text-muted">••••••••••</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-medium text-sage-text bg-sage-soft px-2 py-0.5 rounded-md shrink-0">Đã mã hóa</span>
+            </div>
+          </div>
+
+          <div class="pt-1 flex items-center justify-between text-[11px] text-muted">
+            <span class="font-mono">com.blackbean.cowsap</span>
+            <span>CEO baebless</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. KHU VỰC TẢI XUỐNG ĐA NỀN TẢNG -->
+  <section id="download" class="py-16 px-4 sm:px-6 bg-canvas2/60 border-y border-hairline">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="text-center max-w-2xl mx-auto">
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Tải xuống chính thức</span>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-ink mt-2">
+          Chọn phiên bản cho thiết bị của bạn
+        </h2>
+        <p class="text-sm sm:text-base text-muted mt-2.5">
+          Tất cả bản cài đặt đều được phát hành trực tiếp từ <strong>BlackBean Studio</strong>, an toàn và không chứa phần mềm rác.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Windows Card -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-slatep-soft border border-slatep-border text-slatep-text flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="monitor" aria-hidden="true" class="lucide lucide-monitor w-6 h-6"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>
+              </div>
+              <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-canvas border border-hairline text-muted">v1.0.0 · .EXE</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">Windows PC / Laptop</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Phần mềm cài đặt độc lập cho Windows 10 &amp; 11. Tự tạo biểu tượng Chó Phốc ngoài Desktop, chạy offline hoàn toàn.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2.5">
+            <button onclick="handleDownload('win')" class="tactile w-full py-3 rounded-xl bg-sage hover:bg-sage-hover text-white text-sm font-semibold shadow-soft flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4 h-4"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+              <span>Tải bản Windows (.EXE)</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Hỗ trợ Windows 10/11 (64-bit)</p>
+          </div>
+        </div>
+
+        <!-- Android Card -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-sage-soft border border-sage-border text-sage-text flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="smartphone" aria-hidden="true" class="lucide lucide-smartphone w-6 h-6"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect><path d="M12 18h.01"></path></svg>
+              </div>
+              <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-canvas border border-hairline text-muted">v1.0.0 · .APK</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">Điện thoại Android</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Ứng dụng cài đặt riêng biệt cho Samsung, Oppo, Xiaomi, Vivo... Có logo Chó Phốc sắc nét ngay trên màn hình chính.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2.5">
+            <button onclick="handleDownload('apk')" class="tactile w-full py-3 rounded-xl bg-sage hover:bg-sage-hover text-white text-sm font-semibold shadow-soft flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4 h-4"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+              <span>Tải bản Android (.APK)</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Gói cài đặt: com.blackbean.cowsap</p>
+          </div>
+        </div>
+
+        <!-- iPhone / Web Card -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-sand-soft border border-sand-border text-sand-text flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="globe" aria-hidden="true" class="lucide lucide-globe w-6 h-6"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+              </div>
+              <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-canvas border border-hairline text-muted">iOS &amp; Web</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">iPhone / iPad &amp; Web</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Mở trực tiếp trên Safari rồi thêm ra Màn hình chính để chạy toàn màn hình độc lập, ẩn hoàn toàn thanh trình duyệt.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2.5">
+            <button onclick="handleDownload('web')" class="tactile w-full py-3 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-sm font-semibold flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="external-link" aria-hidden="true" class="lucide lucide-external-link w-4 h-4 text-sage"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+              <span>Mở COWSAP Web App</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Tương thích Safari iOS &amp; mọi trình duyệt</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TÍNH NĂNG NỔI BẬT -->
+  <section id="features" class="py-16 sm:py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="max-w-2xl">
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Vì sao chọn COWSAP?</span>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">
+          Bảo mật chuẩn chuyên nghiệp trong một giao diện thư thái
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sage-soft text-sage-text flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lock" aria-hidden="true" class="lucide lucide-lock w-5 h-5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3 class="font-display font-bold text-base text-ink">Mã hóa AES-GCM 256</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">
+            Mật khẩu chính được băm 100.000 vòng PBKDF2. Không ai ngoài bạn có thể giải mã két sắt.
+          </p>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-slatep-soft text-slatep-text flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="key-round" aria-hidden="true" class="lucide lucide-key-round w-5 h-5"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+          </div>
+          <h3 class="font-display font-bold text-base text-ink">Trình tạo mật khẩu mạnh</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">
+            Sinh mật khẩu ngẫu nhiên 8–32 ký tự kèm đo entropy và cảnh báo mật khẩu yếu/trùng lặp.
+          </p>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-lavender-soft text-lavender-text flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="hard-drive-download" aria-hidden="true" class="lucide lucide-hard-drive-download w-5 h-5"><path d="M12 2v8"></path><path d="m16 6-4 4-4-4"></path><rect width="20" height="8" x="2" y="14" rx="2"></rect><path d="M6 18h.01"></path><path d="M10 18h.01"></path></svg>
+          </div>
+          <h3 class="font-display font-bold text-base text-ink">Sao lưu .JSON linh hoạt</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">
+            Dễ dàng xuất tệp sao lưu đã mã hóa để chuyển dữ liệu giữa máy tính và điện thoại trong 5 giây.
+          </p>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sand-soft text-sand-text flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clock" aria-hidden="true" class="lucide lucide-clock w-5 h-5"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          </div>
+          <h3 class="font-display font-bold text-base text-ink">Tự động khóa thông minh</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">
+            Tự khóa két sắt khi bạn rời khỏi thiết bị sau 5 hoặc 15 phút để bảo vệ tối đa quyền riêng tư.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HƯỚNG DẪN CÀI ĐẶT TRỰC QUAN -->
+  <section id="guide" class="py-16 px-4 sm:px-6 bg-canvas2/60 border-y border-hairline">
+    <div class="max-w-4xl mx-auto space-y-8">
+      <div class="text-center">
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Hướng dẫn cài đặt nhanh</span>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">
+          Cài đặt trong chưa đầy 1 phút
+        </h2>
+      </div>
+
+      <!-- Platform Tabs -->
+      <div class="flex items-center justify-center gap-2 flex-wrap">
+        <button onclick="switchGuideTab('win')" data-guide-tab="win" class="guide-tab tactile px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-sage text-white shadow-soft flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="monitor" aria-hidden="true" class="lucide lucide-monitor w-4 h-4"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>
+          <span>Windows (.EXE)</span>
+        </button>
+        <button onclick="switchGuideTab('apk')" data-guide-tab="apk" class="guide-tab tactile px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-surface border border-hairline text-muted hover:text-ink flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="smartphone" aria-hidden="true" class="lucide lucide-smartphone w-4 h-4"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect><path d="M12 18h.01"></path></svg>
+          <span>Android (.APK)</span>
+        </button>
+        <button onclick="switchGuideTab('ios')" data-guide-tab="ios" class="guide-tab tactile px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-surface border border-hairline text-muted hover:text-ink flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="apple" aria-hidden="true" class="lucide lucide-apple w-4 h-4"><path d="M12 6.528V3a1 1 0 0 1 1-1h0"></path><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"></path></svg>
+          <span>iPhone (iOS)</span>
+        </button>
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="bg-surface border border-hairline rounded-3xl p-6 sm:p-8 shadow-soft">
+        <!-- Windows Panel -->
+        <div id="guide-panel-win" class="guide-panel space-y-4">
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Tải và giải nén (nếu là file .zip)</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Bấm nút <strong>Tải bản Windows (.EXE)</strong> ở trên, sau đó nhấp đúp để chạy tệp cài đặt <code>COWSAP Setup.exe</code>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Vượt qua thông báo Windows SmartScreen (Lần đầu)</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Vì COWSAP là phần mềm độc lập mới phát hành chưa mua chứng chỉ Microsoft, nếu thấy bảng xanh <em>"Windows protected your PC"</em>, bạn chỉ cần bấm <strong>More info (Thông tin thêm)</strong> → chọn <strong>Run anyway (Vẫn chạy)</strong>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Hoàn tất &amp; Khởi tạo két sắt</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Logo Chó Phốc COWSAP sẽ tự động xuất hiện ngoài màn hình Desktop. Mở app và đặt Mật khẩu chính để bắt đầu sử dụng!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Android Panel -->
+        <div id="guide-panel-apk" class="guide-panel hidden space-y-4">
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Tải tệp COWSAP.apk về điện thoại</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Bấm nút <strong>Tải bản Android (.APK)</strong> ở trên. Nếu trình duyệt hỏi xác nhận tệp APK, chọn <strong>Vẫn tải xuống</strong>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Cho phép cài đặt ứng dụng</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Mở tệp <code>COWSAP.apk</code> vừa tải. Nếu máy yêu cầu cấp quyền, bấm <strong>Cài đặt → Cho phép từ nguồn này</strong> rồi quay lại bấm <strong>Cài đặt (Install)</strong>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Mở COWSAP ngay trên màn hình chính</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Ứng dụng COWSAP với biểu tượng Chó Phốc đã cài xong như một ứng dụng độc lập hoàn chỉnh.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- iOS Panel -->
+        <div id="guide-panel-ios" class="guide-panel hidden space-y-4">
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Mở COWSAP Web App bằng trình duyệt Safari</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Bấm nút <strong>Mở COWSAP Web App</strong> trên iPhone bằng trình duyệt <strong>Safari</strong> mặc định.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Thêm vào Màn hình chính</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Chạm biểu tượng <strong>Chia sẻ (ô vuông mũi tên lên)</strong> ở cạnh dưới → cuộn xuống chọn <strong>Thêm vào MH chính (Add to Home Screen)</strong> → bấm <strong>Thêm</strong>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5">
+            <span class="w-7 h-7 rounded-full bg-sage-soft text-sage-text font-display font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <h4 class="font-semibold text-sm text-ink">Trải nghiệm toàn màn hình không thanh web</h4>
+              <p class="text-xs sm:text-sm text-muted mt-1 leading-relaxed">Mở logo Chó Phốc COWSAP ngoài màn hình iPhone, ứng dụng sẽ chạy tràn viền độc lập như app App Store.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. HỆ SINH THÁI & LỘ TRÌNH BLACKBEAN -->
+  <section id="roadmap" class="py-16 sm:py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Hệ sinh thái BlackBean</span>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">
+            Sản phẩm &amp; Lộ trình sắp tới
+          </h2>
+        </div>
+        <span class="text-xs text-muted">Cập nhật: Tháng 11/2026</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-surface border border-sage-border rounded-3xl p-6 shadow-soft space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sage-soft text-sage-text">Đã phát hành</span>
+            <span class="text-xs font-mono text-muted">v1.0 → v1.5</span>
+          </div>
+          <h3 class="font-display text-lg font-bold text-ink">COWSAP Password Vault</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Bản v1.5 sắp tới sẽ bổ sung mở khóa nhanh bằng mã PIN 6 số, tích hợp mã 2FA (TOTP) và nhập mật khẩu 1 chạm từ Chrome/Edge.
+          </p>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand-soft text-sand-text">Đang lên kế hoạch</span>
+            <span class="text-xs font-mono text-muted">Dự án #2</span>
+          </div>
+          <h3 class="font-display text-lg font-bold text-ink">BEANCASH Finance</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Ứng dụng quản lý chi tiêu cá nhân &amp; chia hũ tài chính tối giản theo phong cách Nordic Pastel, hoạt động offline 100%.
+          </p>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-lavender-soft text-lavender-text">Ý tưởng</span>
+            <span class="text-xs font-mono text-muted">Dự án #3</span>
+          </div>
+          <h3 class="font-display text-lg font-bold text-ink">PLAYLOG &amp; CALMDESK</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Không gian quản lý thư viện Game Steam và góc tập trung Pomodoro tối giản dành cho sinh viên và game thủ.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER & THÔNG TIN CEO -->
+  <footer class="border-t border-hairline bg-surface py-10 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3.5 text-center sm:text-left">
+        <div class="w-10 h-10 shrink-0">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <rect width="200" height="200" rx="48" fill="#E5EFE9"></rect>
+            <g transform="rotate(-24 100 100)">
+              <path d="M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z" fill="#232A26"></path>
+              <path d="M 79 84 C 87 94, 87 106, 79 116" stroke="#E5EFE9" stroke-width="8" stroke-linecap="round"></path>
+              <path d="M 118 63 C 129 73, 134 86, 133 101" stroke="#6F9380" stroke-width="7" stroke-linecap="round"></path>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <p class="font-display font-bold text-sm text-ink">© 2026 BlackBean Studio</p>
+          <p class="text-xs text-muted mt-0.5">Sáng lập &amp; Điều hành bởi CEO <strong class="text-ink">baebless</strong></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="copyContactInfo()" class="tactile px-4 py-2 rounded-xl bg-canvas hover:bg-sage-soft border border-hairline hover:border-sage-border text-xs font-medium text-ink flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mail" aria-hidden="true" class="lucide lucide-mail w-3.5 h-3.5 text-sage"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+          <span id="footer-contact-text">blackbean.office.studio@gmail.com</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 8. MODAL CẤU HÌNH LINK TẢI DÀNH CHO CEO -->
+  <div id="config-modal" class="modal-backdrop fixed inset-0 z-50 bg-ink/35 backdrop-blur-[2px] flex items-center justify-center p-4">
+    <div class="modal-panel w-full max-w-lg bg-surface border border-hairline rounded-3xl p-6 sm:p-7 shadow-soft-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="font-display text-lg font-bold text-ink">Cấu hình link tải (CEO)</h3>
+          <p class="text-xs text-muted mt-0.5">Dán link tải thật của bạn rồi xuất file <code>index.html</code> đưa lên Netlify</p>
+        </div>
+        <button onclick="closeConfigModal()" class="tactile p-2 rounded-xl text-muted hover:text-ink hover:bg-canvas">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+      </div>
+
+      <form id="portal-config-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-muted mb-1">Link tải Windows (.EXE) — Google Drive / GitHub Release</label>
+          <input type="url" id="cfg-win-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-muted mb-1">Link tải Android (.APK) — Google Drive / GitHub Release</label>
+          <input type="url" id="cfg-apk-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-muted mb-1">Link Web App / iPhone (Link Netlify COWSAP của bạn)</label>
+          <input type="url" id="cfg-web-url" placeholder="https://papaya-boba-9d8526.netlify.app" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-muted mb-1">Email / Zalo liên hệ CEO</label>
+          <input type="text" id="cfg-contact" placeholder="VD: blackbean.office.studio@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        </div>
+
+        <label class="flex items-center justify-between p-3 rounded-xl bg-canvas border border-hairline cursor-pointer">
+          <div>
+            <span class="block text-xs font-semibold text-ink">Ẩn nút "Cài link (CEO)" khi xuất web công khai</span>
+            <span class="block text-[11px] text-muted">Khuyên bật để khách truy cập không thấy nút chỉnh sửa</span>
+          </div>
+          <input type="checkbox" id="cfg-hide-ceo-btn" checked="" class="w-4 h-4 accent-[#4E6E5D]">
+        </label>
+
+        <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+          <button type="submit" class="tactile flex-1 py-2.5 rounded-xl bg-canvas hover:bg-hairline/60 text-sm font-semibold text-ink">
+            Lưu tạm để test
+          </button>
+          <button type="button" onclick="exportPortalHtml()" class="tactile flex-1 py-2.5 rounded-xl bg-sage hover:bg-sage-hover text-white text-sm font-semibold shadow-soft flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4 h-4"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+            <span>Xuất index.html đăng web</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[70] flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+  <script>
+    // Cấu hình mặc định của Cổng Tải BlackBean
+    let portalConfig = {
+      winUrl: '',
+      apkUrl: '',
+      webUrl: 'https://papaya-boba-9d8526.netlify.app',
+      contact: 'blackbean.office.studio@gmail.com',
+      hideCeoBtn: false
+    };
+
+    function initPortal() {
+      // Đọc cấu hình nhúng trong meta (nếu đã xuất file)
+      const meta = document.getElementById('portal-config-meta');
+      if (meta && meta.content) {
+        try {
+          const parsed = JSON.parse(meta.content);
+          portalConfig = { ...portalConfig, ...parsed };
+        } catch (e) {}
+      }
+
+      // Ẩn nút CEO nếu bản đã xuất công khai
+      if (portalConfig.hideCeoBtn) {
+        const btn = document.getElementById('ceo-config-btn');
+        if (btn) btn.classList.add('hidden');
+      }
+
+      updateFooterContact();
+      lucide.createIcons();
+    }
+
+    function updateFooterContact() {
+      const el = document.getElementById('footer-contact-text');
+      if (el && portalConfig.contact) {
+        el.textContent = portalConfig.contact;
+      }
+    }
+
+    // Xử lý bấm nút Tải xuống
+    function handleDownload(platform) {
+      const urlMap = {
+        win: { url: portalConfig.winUrl, name: 'Windows (.EXE)' },
+        apk: { url: portalConfig.apkUrl, name: 'Android (.APK)' },
+        web: { url: portalConfig.webUrl, name: 'COWSAP Web App' }
+      };
+      const target = urlMap[platform];
+      if (!target || !target.url) {
+        showToast(`Chưa gắn link tải bản ${target.name}. Hãy bấm "Cài link (CEO)" ở góc trên để dán link!`, 'info', 4200);
+        if (!portalConfig.hideCeoBtn) openConfigModal();
+        return;
+      }
+      window.open(target.url, '_blank', 'noopener,noreferrer');
+      showToast(`Đang mở liên kết tải ${target.name}...`, 'success');
+    }
+
+    function openWebAppLink() {
+      handleDownload('web');
+    }
+
+    // Chuyển tab hướng dẫn cài đặt
+    function switchGuideTab(tabId) {
+      document.querySelectorAll('.guide-tab').forEach(btn => {
+        const active = btn.getAttribute('data-guide-tab') === tabId;
+        btn.className = `guide-tab tactile px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 ${
+          active ? 'bg-sage text-white shadow-soft' : 'bg-surface border border-hairline text-muted hover:text-ink'
+        }`;
+      });
+      document.querySelectorAll('.guide-panel').forEach(panel => {
+        panel.classList.toggle('hidden', panel.id !== `guide-panel-${tabId}`);
+      });
+    }
+
+    // Modal Cấu hình CEO
+    function openConfigModal() {
+      document.getElementById('cfg-win-url').value = portalConfig.winUrl || '';
+      document.getElementById('cfg-apk-url').value = portalConfig.apkUrl || '';
+      document.getElementById('cfg-web-url').value = portalConfig.webUrl || '';
+      document.getElementById('cfg-contact').value = portalConfig.contact || '';
+      document.getElementById('config-modal').classList.add('open');
+      lucide.createIcons();
+    }
+
+    function closeConfigModal() {
+      document.getElementById('config-modal').classList.remove('open');
+    }
+
+    document.getElementById('config-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'config-modal') closeConfigModal();
+    });
+
+    function readConfigFromForm() {
+      portalConfig.winUrl = document.getElementById('cfg-win-url').value.trim();
+      portalConfig.apkUrl = document.getElementById('cfg-apk-url').value.trim();
+      portalConfig.webUrl = document.getElementById('cfg-web-url').value.trim();
+      portalConfig.contact = document.getElementById('cfg-contact').value.trim() || 'blackbean.office.studio@gmail.com';
+      updateFooterContact();
+    }
+
+    document.getElementById('portal-config-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      readConfigFromForm();
+      closeConfigModal();
+      showToast('Đã lưu link tạm thời! Bạn có thể bấm thử các nút tải ngay.', 'success');
+    });
+
+    // Xuất tệp index.html hoàn chỉnh để kéo thả lên Netlify
+    function exportPortalHtml() {
+      readConfigFromForm();
+      const hideBtn = document.getElementById('cfg-hide-ceo-btn').checked;
+
+      const cloned = document.documentElement.cloneNode(true);
+      const meta = cloned.querySelector('#portal-config-meta');
+      if (meta) {
+        meta.setAttribute('content', JSON.stringify({
+          winUrl: portalConfig.winUrl,
+          apkUrl: portalConfig.apkUrl,
+          webUrl: portalConfig.webUrl,
+          contact: portalConfig.contact,
+          hideCeoBtn: hideBtn
+        }));
+      }
+
+      // Dọn sạch modal & toast trước khi xuất
+      const modal = cloned.querySelector('#config-modal');
+      if (modal) modal.classList.remove('open');
+      const toast = cloned.querySelector('#toast-container');
+      if (toast) toast.innerHTML = '';
+
+      const htmlContent = '<!DOCTYPE html>\n' + cloned.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      closeConfigModal();
+      showToast('Đã xuất tệp index.html! Hãy kéo thả lên Netlify Drop để đưa trang chủ BlackBean lên mạng.', 'success', 4500);
+    }
+
+    // Sao chép liên hệ an toàn trong iFrame
+    function copyContactInfo() {
+      const text = portalConfig.contact || 'blackbean.office.studio@gmail.com';
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (e) {
+        copied = false;
+      }
+      document.body.removeChild(ta);
+      if (copied) {
+        showToast(`Đã sao chép: ${text}`, 'success');
+      } else {
+        showToast('Không thể sao chép tự động.', 'info');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Hiển thị thông báo Toast góc dưới bên phải
+    function showToast(message, type = 'success', duration = 3000) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const styles = {
+        success: { bg: 'bg-surface border-sage-border', icon: 'check-circle-2', color: 'text-sage' },
+        info:    { bg: 'bg-surface border-hairline', icon: 'info', color: 'text-slatep-text' }
+      }[type] || { bg: 'bg-surface border-hairline', icon: 'info', color: 'text-ink' };
+
+      toast.className = `pointer-events-auto toast-enter flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-soft-md ${styles.bg}`;
+      toast.innerHTML = `<i data-lucide="${styles.icon}" class="w-4 h-4 ${styles.color} shrink-0"></i><span class="text-xs sm:text-sm font-medium text-ink leading-snug">${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 240);
+      }, duration);
+    }
+
+    window.addEventListener('DOMContentLoaded', initPortal);
+  </script>
+
+</body></html>
