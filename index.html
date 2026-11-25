@@ -1,841 +1,27 @@
 <!DOCTYPE html>
-<html lang="vi" class="scroll-smooth"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
-        window.__firebase_config = firebaseConfig;
-        window.__initial_auth_token = initialAuthToken;
-        window.__app_id = appId;
-            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxODA5MjUxMjIwNTk5Mzk2NTk3OCIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzlmODI1OWVlMjkyZDVlN2RfYmxhY2tiZWFuX3BvcnRhbC5odG1sLTkzNCJ9LCJleHAiOjE3OTU0NDgyOTYsImlhdCI6MTc5NTQ0NDY5NiwiYWxnIjoiUlMyNTYifQ.gHfPkc0LNtfQmH-JxIw9XJYj4R1OAT0zxqE4krhWI9ogV64KiFcaber1Bb0wSQnnG4NBPAsZjLIDbIPyadVrfEbNykwPoUYaMXWy6O03lr6t_POINFZK60FUcvCh2CDyYHlTDIQu3xzgfKI7GCspn6jkbFhMzGmJ5i-Wo1Kq37H9kIWK9OdvTBx5ShhHpmVvrc3ahgg8MpnabYFgX35Ko-vU0d9INJ8HEdoKcwcTwcuRHLJa5zdbUaypbO2GS6a8K3abb-uy0V8VL_4MxjRSmYSkPNfc85heJxIcaf2pahZjMlhIQUWvJ9sbMqQFjN5AMIs4__xs0yQBfL2SlHUd4w","c_9f8259ee292d5e7d_blackbean_portal.html-934")</script><script data-bard-client-injected="true">
-  document.addEventListener('input', (event) => {
-    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
-      const clonedDoc = document.cloneNode(true);
-      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
-      injectedScripts.forEach(el => el.remove());
-      window.parent.postMessage({
-        type: 'inlineEdit',
-        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
-      }, '*');
-    }
-  });
-</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const SCROLL_KEYS = new Set([
-    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
-  ]);
-  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
-
-  function isTextEntryTarget(target) {
-    if (!target) return false;
-    const tagName = target.tagName;
-    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
-        tagName === 'SELECT' || target.isContentEditable === true;
-  }
-
-  // An element absorbs the key only if it both overflows on the axis being
-  // scrolled and is configured to scroll on that axis. The cheap dimension
-  // test runs first because getComputedStyle forces a style recalc, and this
-  // runs on every keypress. Each axis is read from its own longhand: the
-  // 'overflow' shorthand serializes as two values when the axes differ, which
-  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
-  function canScroll(node, horizontal) {
-    const overflows = horizontal ? node.scrollWidth > node.clientWidth
-                                 : node.scrollHeight > node.clientHeight;
-    if (!overflows) return false;
-    const style = window.getComputedStyle(node);
-    const overflow = horizontal ? style.overflowX : style.overflowY;
-    return overflow === 'auto' || overflow === 'scroll';
-  }
-
-  // Walks up from the event target so nested scrollers keep their behavior.
-  // <body> is included because pages that pin the root height make it the
-  // scroll container.
-  function hasScrollableAncestor(target, horizontal) {
-    let node = target;
-    while (node && node !== document.documentElement) {
-      if (canScroll(node, horizontal)) return true;
-      node = node.parentElement;
-    }
-    return false;
-  }
-
-  function rootCanScroll(horizontal) {
-    const scroller = document.scrollingElement || document.documentElement;
-    if (!scroller) return false;
-    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
-    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
-                      : scroller.scrollHeight > window.innerHeight + 1;
-  }
-
-  window.addEventListener('keydown', function(event) {
-    if (!SCROLL_KEYS.has(event.key)) return;
-    if (event.defaultPrevented) return;
-    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
-    // reserved for shortcuts, so none of them are scroll intent.
-    if (event.altKey || event.metaKey || event.ctrlKey) return;
-
-    const target = event.target;
-    if (isTextEntryTarget(target)) return;
-
-    // Anything that can still absorb the scroll gets to keep it.
-    const horizontal = HORIZONTAL_KEYS.has(event.key);
-    if (rootCanScroll(horizontal)) return;
-    if (hasScrollableAncestor(target, horizontal)) return;
-
-    event.preventDefault();
-  }, {capture: true, passive: false});
-})();</script><script data-bard-client-injected="true">(function() {
-  // Ensure this script is executed only once
-  if (window.firebaseAuthBridgeScriptLoaded) {
-    return;
-  }
-  window.firebaseAuthBridgeScriptLoaded = true;
-
-  let nextTokenPromiseId = 0;
-
-  // Stores { resolve, reject } for ongoing token requests
-  const pendingTokenPromises = {};
-
-  // Listen for messages from the Host Application
-  window.addEventListener('message', function(event) {
-
-    const messageData = event.data;
-
-  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
-      const { success, token, error, promiseId } = messageData ?? {};
-      if (pendingTokenPromises[promiseId]) {
-        if (success) {
-          pendingTokenPromises[promiseId].resolve(token);
-        } else {
-          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
-        }
-        delete pendingTokenPromises[promiseId];
-      }
-    }
-  });
-
-  // Expose a function for the Generated App to request a new Firebase token
-  window.requestNewFirebaseToken = function() {
-    const currentPromiseId = nextTokenPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingTokenPromises[currentPromiseId] = { resolve, reject };
-    });
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'REQUEST_NEW_FIREBASE_TOKEN',
-        promiseId: currentPromiseId
-      }, '*');
-    } else {
-      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
-      delete pendingTokenPromises[currentPromiseId];
-    }
-    return promise;
-  };
-})();</script><script data-bard-client-injected="true">
-let realOriginalGetUserMedia = null;
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-}
-
-(function() {
-  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
-    try {
-      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
-        get: function() {
-          return undefined; // Or throw an error
-        },
-        configurable: false
-      });
-    } catch (error) {
-      console.error("Error defining prototype getter:", error);
-    }
-  }
-})();
-
-(function() {
-  const pendingMediaResolvers = {};
-  let nextMediaPromiseId = 0;
-
-  function requestMediaPermissions(constraints) {
-    const mediaPromiseId = nextMediaPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingMediaResolvers[mediaPromiseId] = (granted) => {
-        delete pendingMediaResolvers[mediaPromiseId];
-        resolve(granted);
-      };
-    });
-
-    window.parent.postMessage({
-      type: 'requestMediaPermission',
-      constraints: constraints,
-      promiseId: mediaPromiseId,
-    }, '*');
-
-    return promise;
-  }
-
-  let originalGetUserMedia = realOriginalGetUserMedia;
-
-  function interceptGetUserMedia() {
-    if (navigator.mediaDevices) {
-      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
-        value: function(constraints) {
-          return requestMediaPermissions(constraints).then((granted) => {
-            if (granted) {
-              if (originalGetUserMedia) {
-                return originalGetUserMedia(constraints);
-              } else {
-                throw new Error("Original getUserMedia not available.");
-              }
-            } else {
-              throw new DOMException('Permission denied', 'NotAllowedError');
-            }
-          });
-        },
-        writable: false,
-        configurable: false
-      });
-    }
-  }
-
-  interceptGetUserMedia();
-
-  const observer = new MutationObserver(function(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'childList' && mutation.addedNodes) {
-        mutation.addedNodes.forEach(node => {
-          if (node === navigator.mediaDevices) {
-            interceptGetUserMedia();
-          }
-        });
-      }
-    }
-  });
-
-  function interceptSpeechRecognition() {
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      return;
-    }
-
-    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    const SpeechRecognitionWrapper = function(...args) {
-      const recognizer = new OriginalSpeechRecognition(...args);
-      const originalStart = recognizer.start.bind(recognizer);
-
-      recognizer.start = function() {
-        requestMediaPermissions({ audio: true }).then(granted => {
-          if (granted) {
-            originalStart();
-          } else {
-            const errorEvent = new SpeechRecognitionErrorEvent('error');
-            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
-            recognizer.dispatchEvent(errorEvent);
-          }
-        });
-      };
-
-      return recognizer;
-    };
-
-    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
-    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
-
-    if (window.SpeechRecognition) {
-      window.SpeechRecognition = SpeechRecognitionWrapper;
-    }
-    if (window.webkitSpeechRecognition) {
-      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
-    }
-  }
-
-  interceptSpeechRecognition();
-
-  window.addEventListener('message', function(event) {
-    if (event.data) {
-      if (event.data.type === 'resolveMediaPermission') {
-        const { promiseId, granted } = event.data;
-        if (pendingMediaResolvers[promiseId]) {
-          pendingMediaResolvers[promiseId](granted);
-        }
-      }
-    }
-  });
-
-})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
-function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
-
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
-let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
-null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
-G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
-16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
-(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
-(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
-url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
-</script><script data-bard-client-injected="true">((function(modelInformation) {
-  const originalFetch = window.fetch;
-  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
-  let googleLlmBaseApiUrls = [
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
-  ];
-  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-    );
-  });
-  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-
-  const pendingFetchResolvers = {};
-  let nextPromiseId = 0;
-
-  function handleStringInput(input, optionsArgument) {
-    const actualUrl = input;
-    const fetchCallArgs = [actualUrl, optionsArgument];
-    const effectiveOptions = optionsArgument || {};
-    const bodyForApiKeyCheck = effectiveOptions.body;
-    const bodyForPostMessage = effectiveOptions.body;
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  function handleRequestInput(input, optionsArgument) {
-    const actualUrl = input.url;
-    const fetchCallArgs = [input, optionsArgument];
-    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (optionsArgument) {
-      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
-      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
-      if ('body' in optionsArgument) {
-        bodyForApiKeyCheck = optionsArgument.body;
-        bodyForPostMessage = optionsArgument.body;
-      } else {
-        bodyForApiKeyCheck = undefined;
-        bodyForPostMessage = input.body;
-      }
-    } else {
-      bodyForApiKeyCheck = undefined;
-      bodyForPostMessage = input.body;
-    }
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  window.fetch = function(input, optionsArgument) {
-    let actualUrl;
-    let fetchCallArgs;
-    let effectiveOptions = {};
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (typeof input === 'string') {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
-    } else if (input instanceof Request) {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
-    } else {
-      return originalFetch.apply(window, [input, optionsArgument]);
-    }
-
-    effectiveOptions.method = effectiveOptions.method || 'GET';
-    if (!effectiveOptions.headers) {
-      effectiveOptions.headers = new Headers();
-    }
-
-
-    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
-      let apiKeyIsNull = true;
-
-      const regex = new RegExp("models/([^:]+)");
-      const modelNameMatch = actualUrl.match(regex);
-      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
-
-
-      try {
-        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
-        const apiKeyParam = urlObject.searchParams.get('key');
-        if (apiKeyParam) {
-          apiKeyIsNull = false;
-        }
-      } catch (e) {
-        // Continue checks even if URL parsing fails
-      }
-
-      if (apiKeyIsNull && effectiveOptions.headers) {
-        const h = new Headers(effectiveOptions.headers);
-        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
-        if (apiKeyHeaderValue) {
-          apiKeyIsNull = false;
-          return originalFetch.apply(window, fetchCallArgs);
-        }
-      }
-
-      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
-        try {
-          const bodyData = JSON.parse(bodyForApiKeyCheck);
-          if (bodyData && bodyData.apiKey) {
-            apiKeyIsNull = false;
-            return originalFetch.apply(window, fetchCallArgs);
-          }
-        } catch (e) {
-          // Ignore JSON parsing errors
-        }
-      }
-
-      if(apiKeyIsNull) {
-        const promiseId = nextPromiseId++;
-        const promise = new Promise((resolve) => {
-          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
-            delete pendingFetchResolvers[promiseId];
-            resolve(resolvedResponse);
-          };
-        });
-
-        let serializedBodyForPostMessage;
-        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
-            serializedBodyForPostMessage = bodyForPostMessage;
-        } else if (bodyForPostMessage instanceof ReadableStream) {
-            serializedBodyForPostMessage = null;
-        } else {
-            try {
-                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
-            } catch (e) {
-                serializedBodyForPostMessage = null;
-            }
-        }
-
-        const messageOptions = {
-            method: effectiveOptions.method,
-            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
-            body: serializedBodyForPostMessage
-        };
-
-        window.parent.postMessage({
-          type: 'requestFetch',
-          url: actualUrl,
-          modelName: modelName,
-          options: messageOptions,
-          promiseId: promiseId,
-        }, '*');
-
-        return promise;
-      }
-      return originalFetch.apply(window, fetchCallArgs);
-    }
-    return originalFetch.apply(window, fetchCallArgs);
-  };
-
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'resolveFetch') {
-      const { promiseId, response } = event.data;
-      if (pendingFetchResolvers[promiseId]) {
-        try {
-          const reconstructedResponse = new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: new Headers(response.headers),
-          });
-          pendingFetchResolvers[promiseId](reconstructedResponse);
-        } catch (error) {
-          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
-        }
-      }
-    }
-  });
-
-}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
-  const OVERLAY_SELECTOR =
-    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
-
-  function isVisibleOverlay(element) {
-    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
-      return false;
-    }
-    if (window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-    for (let cur = element; cur; cur = cur.parentElement) {
-      if (window.getComputedStyle(cur).display === 'none') {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function hasOpenOverlay() {
-    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
-    for (let i = 0; i < candidates.length; i++) {
-      if (isVisibleOverlay(candidates[i])) {
-        return true;
-      }
-    }
-    try {
-      if (document.querySelector('[popover]:popover-open')) {
-        return true;
-      }
-    } catch (e) {
-      // Ignore engines that do not support :popover-open.
-    }
-    return false;
-  }
-
-  function isNonEmptySearchInput(target) {
-    return (
-      Boolean(target) &&
-      target.tagName === 'INPUT' &&
-      typeof target.type === 'string' &&
-      target.type.toLowerCase() === 'search' &&
-      typeof target.value === 'string' &&
-      target.value.length > 0
-    );
-  }
-
-  function shouldIgnoreEscape(event) {
-    return (
-      event.key !== 'Escape' ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.isComposing ||
-      event.repeat ||
-      event.keyCode === 229 ||
-      isNonEmptySearchInput(event.target)
-    );
-  }
-
-  let shouldIgnoreCaptureState = false;
-
-  window.addEventListener(
-    'keydown',
-    function(event) {
-      if (event.key === 'Escape') {
-        shouldIgnoreCaptureState =
-          hasOpenOverlay() || isNonEmptySearchInput(event.target);
-      }
-    },
-    {capture: true},
-  );
-
-  window.addEventListener('keydown', function(event) {
-    if (
-      shouldIgnoreEscape(event) ||
-      event.defaultPrevented ||
-      shouldIgnoreCaptureState
-    ) {
-      return;
-    }
-    const wasBlockedOnCapture = shouldIgnoreCaptureState;
-    queueMicrotask(function() {
-      if (event.defaultPrevented || wasBlockedOnCapture) {
-        return;
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({'type': 'escapeKey'}, '*');
-      }
-    });
-  });
-})();</script><script data-bard-client-injected="true">(function() {
-  function normalizeSlug(str) {
-    try {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^p{L}p{N}s_-]/gu, '')
-        .replace(/s+/g, '-');
-    } catch (e) {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9s_-]/g, '')
-        .replace(/s+/g, '-');
-    }
-  }
-
-  function findTargetElement(hash) {
-    if (!hash || hash === '#') {
-      return null;
-    }
-    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
-    let decodedId = rawId;
-    try {
-      decodedId = decodeURIComponent(rawId);
-    } catch (e) {
-      // Ignore URI malformed errors.
-    }
-
-    // 1. Direct ID match (raw and decoded).
-    let target = document.getElementById(rawId) || document.getElementById(decodedId);
-    if (target) {
-      return target;
-    }
-
-    // 2. Name attribute match (<a name="...">).
-    try {
-      if (typeof CSS !== 'undefined' && CSS.escape) {
-        target =
-          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
-          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
-      } else {
-        const namedElements = document.getElementsByName(rawId);
-        if (namedElements && namedElements.length > 0) {
-          return namedElements[0];
-        }
-      }
-    } catch (e) {
-      // Ignore querySelector syntax errors.
-    }
-    if (target) {
-      return target;
-    }
-
-    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
-    const targetSlug = normalizeSlug(decodedId);
-    if (targetSlug) {
-      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
-        if (normalizeSlug(heading.textContent || '') === targetSlug) {
-          return heading;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  document.addEventListener('click', function(event) {
-    const target = event.target;
-    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
-    if (!anchor) {
-      return;
-    }
-
-    const href = anchor.getAttribute('href');
-    if (
-      !href ||
-      href.trim().toLowerCase().startsWith('javascript:') ||
-      anchor.hasAttribute('download')
-    ) {
-      return;
-    }
-
-    // Check if the link is an in-page hash / anchor link.
-    if (href.startsWith('#')) {
-      event.preventDefault();
-      const targetElement = findTargetElement(href);
-      if (targetElement) {
-        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-      return;
-    }
-
-    // Check if the URL has the same origin/pathname but with a hash.
-    try {
-      const url = new URL(anchor.href, window.location.href);
-      if (
-        url.hash &&
-        url.origin === window.location.origin &&
-        url.pathname === window.location.pathname
-      ) {
-        event.preventDefault();
-        const targetElement = findTargetElement(url.hash);
-        if (targetElement) {
-          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-        return;
-      }
-    } catch (e) {
-      // Fall through if URL parsing fails.
-    }
-
-    // For all external or full navigation links, prevent iframe-level navigation
-    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
-    // safely in a new tab/window.
-    if (anchor.target !== '_blank') {
-      event.preventDefault();
-      window.open(anchor.href, '_blank', 'noopener,noreferrer');
-    }
-  }, {capture: true});
-})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
-
-    /**
-   * Normalizes an error event or a promise rejection reason into a structured error object.
-   * @param {*} errorEventOrReason The error object or reason.
-   * @return {object} Structured error data { message, name, stack }.
-   */
-  function getErrorObject(errorEventOrReason) {
-    if (errorEventOrReason instanceof Error) {
-      return {
-        message: errorEventOrReason.message,
-        name: errorEventOrReason.name,
-        stack: errorEventOrReason.stack,
-      };
-    }
-    // Fallback for non-Error objects.
-    try {
-      return {
-        message: JSON.stringify(errorEventOrReason),
-        name: 'UnknownErrorType',
-        stack: null,
-      };
-    } catch (e) {
-      return {
-        message: String(errorEventOrReason),
-        name: 'UnknownErrorTypeNonStringifiable',
-        stack: null,
-      };
-    }
-  }
-
-  /**
-   * Converts an array of arguments (from log/error) into a single string.
-   * Handles Error objects specially to include their message and stack.
-   * @param {Array<*>} args - Arguments passed to console methods.
-   * @return {string} A string representation of the arguments.
-   */
-  function stringifyArgs(args) {
-    return args
-      .map((arg) => {
-        if (arg instanceof Error) {
-          const {message, stack} = arg;
-          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
-        }
-        if (typeof arg === 'object' && arg !== null) {
-          try {
-            return JSON.stringify(arg);
-          } catch (error) {
-            return '[Circular Object]';
-          }
-        } else {
-          return String(arg);
-        }
-      })
-      .join(' ');
-  }
-
-  console.log = function(...args) {
-    const logString = stringifyArgs(args);
-    window.parent.postMessage({ type: 'log', message: logString }, '*');
-    originalConsoleLog.apply(console, args);
-  };
-
-  console.error = function(...args) {
-    let errorData;
-    if (args.length > 0 && args[0] instanceof Error) {
-      const err = args[0];
-      // If the first arg is an Error, capture its details.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        ...getErrorObject(err),
-        rawArgsString: stringifyArgs(args.slice(1)),
-        timestamp: new Date().toISOString(),
-      };
-    } else {
-      // If not an Error object, treat all args as a general error message.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        message: stringifyArgs(args),
-        name: 'ConsoleLoggedError',
-        stack: null,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    window.parent.postMessage(errorData, '*');
-    originalConsoleError.apply(console, args);
-  };
-
-  // Listen for global unhandled synchronous errors.
-  window.addEventListener('error', function(event) {
-    const errorDetails = event.error ? getErrorObject(event.error) : {
-      message: event.message,
-      name: 'GlobalError',
-      stack: null,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-    };
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'global',
-      ...errorDetails,
-      message: errorDetails.message || event.message,
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-  // Listen for unhandled promise rejections (asynchronous errors).
-  window.addEventListener('unhandledrejection', function(event) {
-    const errorDetails = getErrorObject(event.reason);
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'unhandledrejection',
-      ...errorDetails,
-      message: errorDetails.message || 'Unhandled Promise Rejection',
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-})();</script>
+<html lang="vi" class="scroll-smooth">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="blackbean-portal-config" id="portal-config-meta" content="{&quot;winUrl&quot;:&quot;https://drive.google.com/file/d/1FBpQmD6sjAbwohhhF7d37LvpMTC5bBmY/view?usp=sharing&quot;,&quot;apkUrl&quot;:&quot;&quot;,&quot;webUrl&quot;:&quot;https://papaya-boba-9d8526.netlify.app&quot;,&quot;web3formsKey&quot;:&quot;70e6efc1-f875-4cef-845d-bf05770e91cb&quot;,&quot;contact&quot;:&quot;blackbean.office.studio@gmail.com&quot;,&quot;siteUrl&quot;:&quot;https://blackbean-web.netlify.app&quot;,&quot;hideCeoBtn&quot;:true}">
-  <title>BlackBean Studio — Cổng Tải Ứng Dụng COWSAP v1.5 Chính Thức</title>
+  <meta name="blackbean-portal-config" id="portal-config-meta" content="{&quot;winUrl&quot;: &quot;https://drive.google.com/file/d/1FBpQmD6sjAbwohhhF7d37LvpMTC5bBmY/view?usp=sharing&quot;, &quot;apkUrl&quot;: &quot;&quot;, &quot;webUrl&quot;: &quot;https://papaya-boba-9d8526.netlify.app&quot;, &quot;rooWebUrl&quot;: &quot;roocozy.html&quot;, &quot;rooWinUrl&quot;: &quot;&quot;, &quot;rooPortUrl&quot;: &quot;&quot;, &quot;rooApkUrl&quot;: &quot;&quot;, &quot;rooVideoUrl&quot;: &quot;&quot;, &quot;web3formsKey&quot;: &quot;70e6efc1-f875-4cef-845d-bf05770e91cb&quot;, &quot;contact&quot;: &quot;blackbean.office.studio@gmail.com&quot;, &quot;siteUrl&quot;: &quot;https://blackbeanstudio.netlify.app&quot;, &quot;hideCeoBtn&quot;: true}">
+  <title>BlackBean Studio — COWSAP v1.5 &amp; ROO – My Little Café v1.7.2</title>
   <meta name="description" content="Tải COWSAP v1.5 chính thức từ BlackBean Studio — Két sắt quản lý mật khẩu tối giản, mã hóa AES-256, hỗ trợ Mã PIN 6 số, 2FA (TOTP) và nhập từ Chrome/Edge.">
 
   <!-- Thẻ xem trước chuyên nghiệp khi gửi link qua Zalo, Messenger & Facebook (Open Graph) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BlackBean Studio">
-  <meta property="og:url" id="og-url-meta" content="https://blackbean-web.netlify.app/">
-  <meta property="og:title" content="BlackBean Studio — Tải Ứng Dụng COWSAP v1.5 Chính Thức">
-  <meta property="og:description" content="Két sắt mật khẩu AES-256 cục bộ nay có thêm Mã PIN 6 số, mã 2FA (TOTP) và nhập 1 chạm từ Chrome/Edge. Điều hành bởi CEO baebless.">
-  <meta property="og:image" id="og-image-meta" content="https://blackbean-web.netlify.app/og-banner.png">
+  <meta property="og:url" id="og-url-meta" content="https://blackbeanstudio.netlify.app/">
+  <meta property="og:title" content="BlackBean Studio — COWSAP v1.5 &amp; ROO – My Little Café (RooCozy v1.7.2)">
+  <meta property="og:description" content="Két sắt mật khẩu COWSAP v1.5 (AES-256, PIN 6 số, 2FA) và game quán cà phê ấm cúng ROO – My Little Café (RooCozy v1.7.2). Điều hành bởi CEO baebless.">
+  <meta property="og:image" id="og-image-meta" content="https://blackbeanstudio.netlify.app/og-banner.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <!-- Thẻ xem trước cho X / Twitter & Discord -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="BlackBean Studio — Tải Ứng Dụng COWSAP v1.5 Chính Thức">
+  <meta name="twitter:title" content="BlackBean Studio — COWSAP v1.5 &amp; ROO – My Little Café (RooCozy v1.7.2)">
   <meta name="twitter:description" content="Két sắt quản lý mật khẩu tối giản, mã hóa AES-256 cục bộ cho Windows, Android &amp; iPhone.">
-  <meta name="twitter:image" id="twitter-image-meta" content="https://blackbean-web.netlify.app/og-banner.png">
+  <meta name="twitter:image" id="twitter-image-meta" content="https://blackbeanstudio.netlify.app/og-banner.png">
 
   <!-- Inline Favicon: BlackBean Minimal Bean -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none'%3E%3Crect width='200' height='200' rx='48' fill='%23E5EFE9'/%3E%3Cg transform='rotate(-24 100 100)'%3E%3Cpath d='M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z' fill='%23232A26'/%3E%3Cpath d='M 79 84 C 87 94, 87 106, 79 116' stroke='%23E5EFE9' stroke-width='7.5' stroke-linecap='round'/%3E%3Cpath d='M 118 63 C 129 73, 134 86, 133 101' stroke='%236F9380' stroke-width='6.5' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
@@ -935,6 +121,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     .pom-eyes { transform-box: fill-box; transform-origin: center; animation: pomBlink 5.2s ease-in-out infinite; }
     .pom-tail { transform-box: fill-box; transform-origin: 25% 75%; animation: pomTailSway 3.2s ease-in-out infinite; }
     .pom-head-group { transform-box: fill-box; transform-origin: bottom center; animation: pomBreathe 3.8s ease-in-out infinite; }
+    @keyframes rooSteam { 0% { opacity: 0; transform: translateY(3px); } 45% { opacity: 0.85; } 100% { opacity: 0; transform: translateY(-7px); } }
+    .roo-steam { animation: rooSteam 2.6s ease-in-out infinite; }
 
     /* Modal Transitions */
     .modal-backdrop { opacity: 0; pointer-events: none; transition: opacity 0.24s ease; }
@@ -954,7 +142,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     .toast-enter { animation: toastIn 0.28s var(--spring) forwards; }
     .toast-exit { animation: toastOut 0.22s ease forwards; }
   </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Be Vietnam Pro", "Plus Jakarta Sans", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:"JetBrains Mono", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.bottom-5{bottom:1.25rem}.right-5{right:1.25rem}.top-0{top:0px}.z-30{z-index:30}.z-50{z-index:50}.z-\[70\]{z-index:70}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-1\.5{margin-top:0.375rem}.mt-2{margin-top:0.5rem}.mt-2\.5{margin-top:0.625rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-9{height:2.25rem}.h-full{height:100%}.max-h-\[90vh\]{max-height:90vh}.w-10{width:2.5rem}.w-12{width:3rem}.w-14{width:3.5rem}.w-2{width:0.5rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-6xl{max-width:72rem}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.max-w-xs{max-width:20rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.resize-none{resize:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-10{gap:2.5rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-3\.5{gap:0.875rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.gap-7{gap:1.75rem}.gap-x-6{column-gap:1.5rem}.gap-y-2{row-gap:0.5rem}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.scroll-smooth{scroll-behavior:smooth}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-full{border-radius:9999px}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-y{border-top-width:1px;border-bottom-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-hairline{--tw-border-opacity:1;border-color:rgb(232 230 223 / var(--tw-border-opacity, 1))}.border-sage-border{--tw-border-opacity:1;border-color:rgb(207 224 214 / var(--tw-border-opacity, 1))}.border-sand-border{--tw-border-opacity:1;border-color:rgb(228 213 197 / var(--tw-border-opacity, 1))}.border-slatep-border{--tw-border-opacity:1;border-color:rgb(203 216 228 / var(--tw-border-opacity, 1))}.bg-canvas{--tw-bg-opacity:1;background-color:rgb(247 246 242 / var(--tw-bg-opacity, 1))}.bg-canvas\/70{background-color:rgb(247 246 242 / 0.7)}.bg-canvas\/90{background-color:rgb(247 246 242 / 0.9)}.bg-canvas2\/60{background-color:rgb(240 238 231 / 0.6)}.bg-ink\/35{background-color:rgb(30 36 33 / 0.35)}.bg-lavender-soft{--tw-bg-opacity:1;background-color:rgb(235 230 242 / var(--tw-bg-opacity, 1))}.bg-sage{--tw-bg-opacity:1;background-color:rgb(78 110 93 / var(--tw-bg-opacity, 1))}.bg-sage-soft{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.bg-sage-soft\/60{background-color:rgb(229 239 233 / 0.6)}.bg-sand-soft{--tw-bg-opacity:1;background-color:rgb(242 234 225 / var(--tw-bg-opacity, 1))}.bg-slatep-soft{--tw-bg-opacity:1;background-color:rgb(227 234 240 / var(--tw-bg-opacity, 1))}.bg-surface{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-16{padding-bottom:4rem}.pb-4{padding-bottom:1rem}.pt-1{padding-top:0.25rem}.pt-12{padding-top:3rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.pt-5{padding-top:1.25rem}.text-center{text-align:center}.font-display{font-family:"Plus Jakarta Sans", "Be Vietnam Pro", sans-serif}.font-mono{font-family:"JetBrains Mono", monospace}.font-sans{font-family:"Be Vietnam Pro", "Plus Jakarta Sans", sans-serif}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-\[1\.14\]{line-height:1.14}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.16em\]{letter-spacing:0.16em}.tracking-\[0\.18em\]{letter-spacing:0.18em}.tracking-tight{letter-spacing:-0.025em}.text-ink{--tw-text-opacity:1;color:rgb(30 36 33 / var(--tw-text-opacity, 1))}.text-lavender-text{--tw-text-opacity:1;color:rgb(75 59 107 / var(--tw-text-opacity, 1))}.text-muted{--tw-text-opacity:1;color:rgb(108 115 110 / var(--tw-text-opacity, 1))}.text-sage{--tw-text-opacity:1;color:rgb(78 110 93 / var(--tw-text-opacity, 1))}.text-sage-text{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.text-sand-text{--tw-text-opacity:1;color:rgb(107 79 53 / var(--tw-text-opacity, 1))}.text-slatep-text{--tw-text-opacity:1;color:rgb(45 74 99 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.placeholder-muted\/60::placeholder{color:rgb(108 115 110 / 0.6)}.accent-\[\#4E6E5D\]{accent-color:#4E6E5D}.shadow-soft{--tw-shadow:0 2px 12px rgba(28, 35, 33, 0.04);--tw-shadow-colored:0 2px 12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-soft-lg{--tw-shadow:0 20px 48px rgba(28, 35, 33, 0.08);--tw-shadow-colored:0 20px 48px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-soft-md{--tw-shadow:0 10px 30px rgba(28, 35, 33, 0.06);--tw-shadow-colored:0 10px 30px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-\[2px\]{--tw-backdrop-blur:blur(2px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.selection\:bg-sage-soft *::selection{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.selection\:text-sage-text *::selection{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.selection\:bg-sage-soft::selection{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.selection\:text-sage-text::selection{--tw-text-opacity:1;color:rgb(47 82 65 / var(--tw-text-opacity, 1))}.hover\:border-sage-border:hover{--tw-border-opacity:1;border-color:rgb(207 224 214 / var(--tw-border-opacity, 1))}.hover\:border-sand-border:hover{--tw-border-opacity:1;border-color:rgb(228 213 197 / var(--tw-border-opacity, 1))}.hover\:bg-canvas:hover{--tw-bg-opacity:1;background-color:rgb(247 246 242 / var(--tw-bg-opacity, 1))}.hover\:bg-hairline\/60:hover{background-color:rgb(232 230 223 / 0.6)}.hover\:bg-sage:hover{--tw-bg-opacity:1;background-color:rgb(78 110 93 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-hover:hover{--tw-bg-opacity:1;background-color:rgb(63 91 76 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-soft:hover{--tw-bg-opacity:1;background-color:rgb(229 239 233 / var(--tw-bg-opacity, 1))}.hover\:bg-sand-soft:hover{--tw-bg-opacity:1;background-color:rgb(242 234 225 / var(--tw-bg-opacity, 1))}.hover\:text-ink:hover{--tw-text-opacity:1;color:rgb(30 36 33 / var(--tw-text-opacity, 1))}.hover\:text-sand-text:hover{--tw-text-opacity:1;color:rgb(107 79 53 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.focus\:border-sage:focus{--tw-border-opacity:1;border-color:rgb(78 110 93 / var(--tw-border-opacity, 1))}.focus\:bg-white:focus{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:w-auto{width:auto}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-end{align-items:flex-end}.sm\:items-center{align-items:center}.sm\:p-7{padding:1.75rem}.sm\:p-8{padding:2rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:py-20{padding-top:5rem;padding-bottom:5rem}.sm\:pb-24{padding-bottom:6rem}.sm\:pt-20{padding-top:5rem}.sm\:text-left{text-align:left}.sm\:text-4xl{font-size:2.25rem;line-height:2.5rem}.sm\:text-5xl{font-size:3rem;line-height:1}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:flex{display:flex}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:mx-0{margin-left:0px;margin-right:0px}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:justify-start{justify-content:flex-start}.lg\:gap-12{gap:3rem}.lg\:text-left{text-align:left}}</style></head>
+</head>
 <body class="font-sans selection:bg-sage-soft selection:text-sage-text">
 
   <!-- 1. THANH ĐIỀU HƯỚNG (NAVBAR) -->
@@ -985,6 +173,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         <a href="#download" class="hover:text-ink transition-colors">Tải COWSAP</a>
         <a href="#features" class="hover:text-ink transition-colors">Tính năng v1.5</a>
         <a href="#guide" class="hover:text-ink transition-colors">Hướng dẫn cài</a>
+        <a href="#roocozy" class="hover:text-ink transition-colors font-semibold text-sage-text">RooCozy v1.7.2</a>
         <a href="#roadmap" class="hover:text-ink transition-colors">Hệ sinh thái</a>
         <a href="#feedback" class="hover:text-ink transition-colors">Góp ý</a>
       </nav>
@@ -1002,6 +191,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       </div>
     </div>
   </header>
+
 
   <!-- 2. HERO SECTION -->
   <section id="top" class="pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 sm:px-6">
@@ -1399,8 +589,223 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     </div>
   </section>
 
+
+  <!-- 5.5. SẢN PHẨM #2: ROO – MY LITTLE CAFÉ (ROOCOZY v1.7.2) -->
+  <section id="roocozy" class="py-16 sm:py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-12">
+
+      <!-- Top 2-Column Showcase (Đồng bộ hoàn toàn bố cục Hero của BlackBean Studio) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <!-- Left Copy -->
+        <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sand-soft border border-sand-border text-sand-text text-xs font-medium">
+            <span class="w-2 h-2 rounded-full bg-sage"></span>
+            <span>Sản phẩm #2 · <strong>ROO – My Little Café (RooCozy v1.7.2)</strong></span>
+          </div>
+
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink leading-[1.16]">
+            Tiệm cà phê nhỏ ấm cúng &amp; <span class="text-sage">góc tập trung Pomodoro</span> cùng Bé Chó Roo.
+          </h2>
+
+          <p class="text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            50% game quản lý quán cà phê nhẹ nhàng, 50% không gian học tập không áp lực. Phiên bản <strong>v1.7.2</strong> bổ sung <strong>Thực đơn 20 món Việt–Mỹ–Pháp–Ý</strong> (có Trà Lài Đác Thơm &amp; Hồng Trà Sữa), <strong>điện thoại BAEOS</strong> chuẩn iPhone (giao hàng <strong>RooShip</strong> &amp; đánh giá quán), <strong>14 nhân vật</strong> (có Bé Phúc &amp; Bé Bòa), <strong>7 bàn &amp; Sân Vườn ROO</strong> cùng <strong>ROO Jukebox</strong>.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
+            <button type="button" onclick="handleRooAction('web')" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-sage hover:bg-sage-hover text-white font-semibold text-sm shadow-soft-md flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+              <span>Chơi RooCozy v1.7.2 ngay</span>
+            </button>
+            <a href="roo.html" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink font-semibold text-sm shadow-soft flex items-center justify-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4 text-sage"></i>
+              <span>Xem ảnh Gameplay &amp; Changelog</span>
+            </a>
+          </div>
+
+          <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-xs text-muted">
+            <span class="flex items-center gap-1.5"><i data-lucide="smartphone" class="w-4 h-4 text-sage"></i> Điện thoại BAEOS · RooShip</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="utensils" class="w-4 h-4 text-sage"></i> 20 món Việt·Mỹ·Pháp·Ý</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="trees" class="w-4 h-4 text-sage"></i> 7 bàn &amp; Sân Vườn ROO</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="disc-3" class="w-4 h-4 text-sage"></i> ROO Jukebox + MP3</span>
+          </div>
+        </div>
+
+        <!-- Right Visual Card (Đồng bộ 100% khung Showcase Card của COWSAP) -->
+        <div class="lg:col-span-5">
+          <div class="bg-surface border border-hairline rounded-[2rem] p-6 sm:p-7 shadow-soft-lg space-y-5 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-hairline">
+              <div class="flex items-center gap-3.5">
+                <!-- Logo chính thức RooCozy (Bé Chó Roo 2 tay ôm tách cà phê bốc khói, không chữ, không thừa chân) -->
+                <div class="w-14 h-14 shrink-0 rounded-2xl bg-[#FDF2E3] border border-sand-border overflow-hidden shadow-soft p-1">
+                  <svg viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="Logo RooCozy">
+                    <path d="M27 42 C18 22, 33 14, 44 28 C47 32, 42 41, 33 46 Z" fill="#262325" stroke="#181517" stroke-width="2.8" stroke-linejoin="round"></path>
+                    <path d="M101 42 C110 22, 95 14, 84 28 C81 32, 86 41, 95 46 Z" fill="#262325" stroke="#181517" stroke-width="2.8" stroke-linejoin="round"></path>
+                    <path d="M26 70 C22 40, 38 22, 64 22 C90 22, 106 40, 102 70 C105 94, 92 108, 64 108 C36 108, 23 94, 26 70 Z" fill="#2B282A" stroke="#181517" stroke-width="3"></path>
+                    <path d="M33 58 C33 44, 43 38, 52 39 C58 39.5, 61.5 44.5, 64 47.5 C66.5 44.5, 70 39.5, 76 39 C85 38, 95 44, 95 58 C96 71, 85 79, 64 79 C43 79, 32 71, 33 58 Z" fill="#F7D08A"></path>
+                    <ellipse cx="64" cy="65" rx="16" ry="10.5" fill="#FFF3D4"></ellipse>
+                    <ellipse cx="41" cy="63" rx="5.5" ry="3.2" fill="#F29E9E" opacity="0.72"></ellipse>
+                    <ellipse cx="87" cy="63" rx="5.5" ry="3.2" fill="#F29E9E" opacity="0.72"></ellipse>
+                    <g class="pom-eyes">
+                      <circle cx="49" cy="54" r="4.6" fill="#1E1917"></circle><circle cx="47.4" cy="52.3" r="1.7" fill="#FFFFFF"></circle>
+                      <circle cx="79" cy="54" r="4.6" fill="#1E1917"></circle><circle cx="77.4" cy="52.3" r="1.7" fill="#FFFFFF"></circle>
+                    </g>
+                    <ellipse cx="64" cy="60.5" rx="4.8" ry="3.3" fill="#231D1A"></ellipse>
+                    <path d="M58 66 Q61 70 64 66 Q67 70 70 66" fill="none" stroke="#231D1A" stroke-width="2.2" stroke-linecap="round"></path>
+                    <path d="M40 80 L88 80 L91 105 Q64 111 37 105 Z" fill="#4E6E5D" stroke="#2D4538" stroke-width="2.4"></path>
+                    <path d="M58 75 Q60 69 58 64" fill="none" stroke="#FFFDF9" stroke-width="2.2" stroke-linecap="round" class="roo-steam"></path>
+                    <path d="M70 75 Q72 69 70 64" fill="none" stroke="#FFFDF9" stroke-width="2.2" stroke-linecap="round" class="roo-steam" style="animation-delay:0.8s"></path>
+                    <rect x="49" y="79" width="30" height="24" rx="7" fill="#FFFDF9" stroke="#4D3E35" stroke-width="2.5"></rect>
+                    <path d="M79 84 Q87 84 87 91 Q87 98 79 98" fill="none" stroke="#4D3E35" stroke-width="2.4"></path>
+                    <ellipse cx="64" cy="83" rx="11" ry="3.2" fill="#8C583A"></ellipse>
+                    <ellipse cx="47" cy="91" rx="8.5" ry="6.5" transform="rotate(-14 47 91)" fill="#2B282A" stroke="#181517" stroke-width="2.4"></ellipse>
+                    <ellipse cx="47" cy="92.5" rx="5" ry="3.5" transform="rotate(-14 47 92.5)" fill="#F7D08A"></ellipse>
+                    <ellipse cx="81" cy="91" rx="8.5" ry="6.5" transform="rotate(14 81 91)" fill="#2B282A" stroke="#181517" stroke-width="2.4"></ellipse>
+                    <ellipse cx="81" cy="92.5" rx="5" ry="3.5" transform="rotate(14 81 92.5)" fill="#F7D08A"></ellipse>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-lg text-ink leading-tight">RooCozy</h3>
+                  <p class="text-xs text-muted">ROO – My Little Café · v1.7.2</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-sand-soft border border-sand-border text-sand-text text-[11px] font-semibold">
+                v1.7.2 Mới
+              </span>
+            </div>
+
+            <!-- Live Feature Rows -->
+            <div class="space-y-2.5">
+              <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl bg-sage-soft text-sage-text flex items-center justify-center shrink-0">
+                    <i data-lucide="trees" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold text-ink truncate">Sân Vườn ROO &amp; Hồ Cá Koi</p>
+                    <p class="text-xs text-muted truncate">Mở rộng 7 bàn · Chuyển 2 khu vực</p>
+                  </div>
+                </div>
+                <span class="text-[11px] font-medium text-sage-text bg-sage-soft px-2 py-0.5 rounded-md shrink-0">+15% 🫘</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl bg-slatep-soft text-slatep-text flex items-center justify-center shrink-0">
+                    <i data-lucide="music" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold text-ink truncate">Automne chez Roo · Jukebox</p>
+                    <p class="text-xs text-muted truncate">6 bài Jazz Pháp + Thêm MP3 riêng</p>
+                  </div>
+                </div>
+                <span class="text-[11px] font-medium text-slatep-text bg-slatep-soft px-2 py-0.5 rounded-md shrink-0">74 BPM</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-canvas border border-hairline flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl bg-sand-soft text-sand-text flex items-center justify-center shrink-0">
+                    <i data-lucide="coffee" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold text-ink truncate">Bé Chó Roo &amp; Bé Bò Sữa 💝</p>
+                    <p class="text-xs text-muted truncate">13 nhân vật · Thiết bị Lv.3 &amp; Combo</p>
+                  </div>
+                </div>
+                <span class="text-[11px] font-medium text-lavender-text bg-lavender-soft px-2 py-0.5 rounded-md shrink-0">Pomodoro</span>
+              </div>
+            </div>
+
+            <div class="pt-1 flex items-center justify-between text-[11px] text-muted">
+              <span class="font-mono">com.blackbean.roocozy</span>
+              <a href="roo.html" class="font-semibold text-sage-text hover:underline">Trang sản phẩm ROO →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Thẻ Tải & Chơi ROO v1.7.2 (Đúng chuẩn 3 cột tactile-card của COWSAP) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- ROO Web / iOS -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-sage-soft border border-sage-border text-sage-text flex items-center justify-center">
+                <i data-lucide="globe" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sage-soft border border-sage-border text-sage-text">v1.7.2 · Web/PWA</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">Chơi Web &amp; iPhone</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Chơi trực tiếp không cần cài đặt. Hỗ trợ thêm ra màn hình chính iPhone/Android như app độc lập, lưu tự động và sao lưu <code>.json</code>.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2.5">
+            <button type="button" onclick="handleRooAction('web')" class="tactile w-full py-3 rounded-xl bg-sage hover:bg-sage-hover text-white text-sm font-semibold shadow-soft flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+              <span>Mở ROO – My Little Café</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Chạy mượt trên Chrome, Edge &amp; Safari</p>
+          </div>
+        </div>
+
+        <!-- ROO Windows (.EXE & Portable) -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-slatep-soft border border-slatep-border text-slatep-text flex items-center justify-center">
+                <i data-lucide="monitor" class="w-6 h-6"></i>
+              </div>
+              <span id="roo-win-badge" class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sand-soft border border-sand-border text-sand-text">Windows · .EXE</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">Windows PC / Laptop</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Hỗ trợ cả bản cài đặt <code>.EXE</code> (tạo biểu tượng Bé Chó Roo trên Desktop) lẫn bản <strong>Portable (.ZIP)</strong> mở chơi ngay không cần cài.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="handleRooAction('win')" class="tactile py-2.5 px-3 rounded-xl bg-sage hover:bg-sage-hover text-white text-xs font-semibold shadow-soft flex items-center justify-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Bản .EXE</span>
+              </button>
+              <button type="button" onclick="handleRooAction('port')" class="tactile py-2.5 px-3 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-xs font-semibold flex items-center justify-center gap-1.5">
+                <i data-lucide="folder-archive" class="w-3.5 h-3.5 text-sage"></i>
+                <span>Portable</span>
+              </button>
+            </div>
+            <p class="text-[11px] text-center text-muted">Windows 10/11 (64-bit) · Chạy Offline 100%</p>
+          </div>
+        </div>
+
+        <!-- ROO Android (.APK) -->
+        <div class="tactile-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-sand-soft border border-sand-border text-sand-text flex items-center justify-center">
+                <i data-lucide="smartphone" class="w-6 h-6"></i>
+              </div>
+              <span id="roo-apk-badge" class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sand-soft border border-sand-border text-sand-text">Android · .APK</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-ink">Điện thoại Android</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">
+              Tệp <code>.APK</code> cài đặt trực tiếp trên Android, mở khóa đầy đủ ROO Jukebox, 4 khung cảnh thời tiết và Sân Vườn Ngoài Trời.
+            </p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-hairline space-y-2.5">
+            <button type="button" onclick="handleRooAction('apk')" class="tactile w-full py-3 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-sm font-semibold flex items-center justify-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 text-sage"></i>
+              <span>Tải bản Android (.APK)</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Gói cài đặt: com.blackbean.roocozy</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- 6. HỆ SINH THÁI & LỘ TRÌNH BLACKBEAN -->
-  <section id="roadmap" class="py-16 sm:py-20 px-4 sm:px-6">
+  <section id="roadmap" class="py-16 sm:py-20 px-4 sm:px-6 bg-canvas2/60 border-t border-hairline">
     <div class="max-w-6xl mx-auto space-y-10">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -1424,25 +829,31 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           </p>
         </div>
 
-        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand-soft text-sand-text">Tiếp theo</span>
-            <span class="text-xs font-mono text-muted">Dự án #2</span>
+        <div class="bg-surface border border-sage-border rounded-3xl p-6 shadow-soft space-y-3 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sage-soft text-sage-text">Đã phát hành</span>
+              <span class="text-xs font-mono text-sage-text font-semibold">v1.7.2</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-ink">ROO – My Little Café</h3>
+            <p class="text-xs text-muted leading-relaxed">
+              Game quán cà phê ấm cúng kết hợp Pomodoro, ROO Jukebox (Jazz Pháp + MP3), 13 nhân vật, nâng cấp thiết bị, Sổ Doanh Thu và Sân Vườn ROO 7 bàn.
+            </p>
           </div>
-          <h3 class="font-display text-lg font-bold text-ink">BEANCASH Finance</h3>
-          <p class="text-xs text-muted leading-relaxed">
-            Ứng dụng quản lý chi tiêu cá nhân &amp; chia hũ tài chính tối giản theo phong cách Nordic Pastel, hoạt động offline 100%.
-          </p>
+          <div class="pt-2 flex items-center gap-3 text-xs font-semibold">
+            <a href="roo.html" class="text-sage-text hover:underline">Xem chi tiết →</a>
+            <button type="button" onclick="handleRooAction('web')" class="text-muted hover:text-ink">Chơi ngay ↗</button>
+          </div>
         </div>
 
         <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-lavender-soft text-lavender-text">Ý tưởng</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand-soft text-sand-text">Tiếp theo</span>
             <span class="text-xs font-mono text-muted">Dự án #3</span>
           </div>
-          <h3 class="font-display text-lg font-bold text-ink">PLAYLOG &amp; CALMDESK</h3>
+          <h3 class="font-display text-lg font-bold text-ink">BEANCASH Finance</h3>
           <p class="text-xs text-muted leading-relaxed">
-            Không gian quản lý thư viện Game Steam và góc tập trung Pomodoro tối giản dành cho sinh viên và game thủ.
+            Ứng dụng quản lý chi tiêu cá nhân &amp; chia hũ tài chính tối giản theo phong cách Nordic Pastel, hoạt động offline 100%.
           </p>
         </div>
       </div>
@@ -1458,7 +869,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           Góp ý trực tiếp cho BlackBean Studio
         </h2>
         <p class="text-sm text-muted max-w-xl mx-auto">
-          Bạn gặp lỗi khi cài đặt hay muốn đề xuất tính năng mới cho <strong>COWSAP</strong>? Mọi phản hồi sẽ được gửi thẳng tới Gmail của CEO <strong>baebless</strong>.
+          Bạn gặp lỗi khi cài đặt hay muốn đề xuất tính năng mới cho <strong>COWSAP</strong> hoặc <strong>ROO – My Little Café</strong>? Mọi phản hồi sẽ được gửi thẳng tới Gmail của CEO <strong>baebless</strong>.
         </p>
       </div>
 
@@ -1486,7 +897,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <div>
             <label for="fb-topic" class="block text-xs font-medium text-muted mb-1.5">Chủ đề phản hồi</label>
             <select id="fb-topic" name="topic" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
-              <option value="Đề xuất tính năng mới">Đề xuất tính năng mới cho COWSAP</option>
+              <option value="Đề xuất tính năng mới (COWSAP)">Đề xuất tính năng mới cho COWSAP</option>
+              <option value="Góp ý / Báo lỗi RooCozy v1.7.2">Góp ý / Báo lỗi ROO – My Little Café (v1.7.2)</option>
               <option value="Báo lỗi cài đặt / sử dụng">Báo lỗi cài đặt hoặc sự cố hiển thị</option>
               <option value="Đánh giá trải nghiệm">Đánh giá trải nghiệm sử dụng</option>
               <option value="Liên hệ hợp tác">Liên hệ trực tiếp CEO baebless</option>
@@ -1527,6 +939,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     </div>
   </section>
 
+
   <!-- 7. FOOTER & THÔNG TIN CEO -->
   <footer class="border-t border-hairline bg-surface py-10 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -1556,33 +969,63 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     </div>
   </footer>
 
+
   <!-- 8. MODAL CẤU HÌNH LINK TẢI DÀNH CHO CEO -->
   <div id="config-modal" class="modal-backdrop fixed inset-0 z-50 bg-ink/35 backdrop-blur-[2px] flex items-center justify-center p-4">
     <div class="modal-panel w-full max-w-lg bg-surface border border-hairline rounded-3xl p-6 sm:p-7 shadow-soft-lg max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-5">
         <div>
           <h3 class="font-display text-lg font-bold text-ink">Cấu hình link tải &amp; Gmail (CEO)</h3>
-          <p class="text-xs text-muted mt-0.5">Dán link tải v1.5 và mã Web3Forms rồi xuất <code>index.html</code></p>
+          <p class="text-xs text-muted mt-0.5">Dán link COWSAP v1.5, RooCozy v1.7.2 và mã Web3Forms rồi xuất <code>index.html</code></p>
         </div>
         <button onclick="closeConfigModal()" class="tactile p-2 rounded-xl text-muted hover:text-ink hover:bg-canvas">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <form id="portal-config-form" class="space-y-4">
-        <div>
-          <label class="block text-xs font-medium text-muted mb-1">Link tải Windows v1.5 (.EXE) — Google Drive / GitHub</label>
-          <input type="url" id="cfg-win-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        <div class="p-3.5 rounded-2xl bg-canvas border border-hairline space-y-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-sage-text">1. Liên kết COWSAP v1.5 (Giữ nguyên)</p>
+          <div>
+            <label class="block text-xs font-medium text-muted mb-1">Link tải COWSAP Windows v1.5 (.EXE)</label>
+            <input type="url" id="cfg-win-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-muted mb-1">Link tải COWSAP Android (.APK)</label>
+            <input type="url" id="cfg-apk-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-muted mb-1">Link COWSAP Web App / iPhone</label>
+            <input type="url" id="cfg-web-url" placeholder="https://papaya-boba-9d8526.netlify.app" class="w-full px-3.5 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-muted mb-1">Link tải Android (.APK) — Google Drive / GitHub</label>
-          <input type="url" id="cfg-apk-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-muted mb-1">Link Web App / iPhone (Link Netlify COWSAP của bạn)</label>
-          <input type="url" id="cfg-web-url" placeholder="https://papaya-boba-9d8526.netlify.app" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+        <div class="p-3.5 rounded-2xl bg-sand-soft/45 border border-sand-border space-y-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-sand-text">2. Liên kết ROO – My Little Café (v1.7.2)</p>
+          <div>
+            <label class="block text-xs font-medium text-muted mb-1">Link chơi ROO bản Web (mặc định: <code>roocozy.html</code>)</label>
+            <input type="text" id="cfg-roo-web-url" placeholder="roocozy.html" class="w-full px-3.5 py-2 rounded-xl bg-surface border border-hairline text-xs font-mono text-ink focus:outline-none focus:border-sage transition">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">ROO Windows (.EXE)</label>
+              <input type="url" id="cfg-roo-win-url" placeholder="https://github.com/.../Setup.exe" class="w-full px-3 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">ROO Windows Portable (.ZIP)</label>
+              <input type="url" id="cfg-roo-port-url" placeholder="https://github.com/.../Portable.zip" class="w-full px-3 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">ROO Android (.APK)</label>
+              <input type="url" id="cfg-roo-apk-url" placeholder="https://github.com/.../RooCozy.apk" class="w-full px-3 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">Video Gameplay ROO (YouTube)</label>
+              <input type="url" id="cfg-roo-video-url" placeholder="https://youtube.com/watch?v=..." class="w-full px-3 py-2 rounded-xl bg-surface border border-hairline text-xs text-ink focus:outline-none focus:border-sage transition">
+            </div>
+          </div>
         </div>
 
         <div>
@@ -1600,16 +1043,16 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
         <div>
           <label class="block text-xs font-medium text-muted mb-1">Link trang chủ BlackBean (để hiện ảnh xem trước Zalo/FB)</label>
-          <input type="url" id="cfg-site-url" placeholder="https://blackbean-web.netlify.app" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
+          <input type="url" id="cfg-site-url" placeholder="https://blackbeanstudio.netlify.app" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas/70 border border-hairline text-sm text-ink focus:outline-none focus:bg-white focus:border-sage transition">
         </div>
 
         <div class="p-3.5 rounded-2xl bg-sage-soft/60 border border-sage-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span class="block text-xs font-semibold text-sage-text">Ảnh bìa chia sẻ Zalo / Facebook</span>
-            <span class="block text-[11px] text-muted mt-0.5">Tải <code>og-banner.png</code> (1200×630) bản v1.5</span>
+            <span class="block text-[11px] text-muted mt-0.5">Tải <code>og-banner.png</code> (1200×630) — COWSAP v1.5 &amp; RooCozy v1.7.2</span>
           </div>
           <button type="button" onclick="downloadOgBannerPng()" class="tactile shrink-0 px-3.5 py-2 rounded-xl bg-surface hover:bg-sage text-sage-text hover:text-white border border-sage-border text-xs font-semibold flex items-center justify-center gap-1.5 shadow-soft">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image-down" aria-hidden="true" class="lucide lucide-image-down w-3.5 h-3.5"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"></path><path d="m14 19 3 3v-5.5"></path><path d="m17 22 3-3"></path><circle cx="9" cy="9" r="2"></circle></svg>
+            <i data-lucide="image-down" class="w-3.5 h-3.5"></i>
             <span>Tải og-banner.png</span>
           </button>
         </div>
@@ -1617,9 +1060,9 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         <label class="flex items-center justify-between p-3 rounded-xl bg-canvas border border-hairline cursor-pointer">
           <div>
             <span class="block text-xs font-semibold text-ink">Ẩn nút "Cài link (CEO)" khi xuất web công khai</span>
-            <span class="block text-[11px] text-muted">Khuyên bật để khách truy cập không thấy nút chỉnh sửa</span>
+            <span class="block text-[11px] text-muted">Mở lại bất kỳ lúc nào bằng cách thêm <code>?ceo=1</code> vào cuối link web</span>
           </div>
-          <input type="checkbox" id="cfg-hide-ceo-btn" checked="" class="w-4 h-4 accent-[#4E6E5D]">
+          <input type="checkbox" id="cfg-hide-ceo-btn" checked class="w-4 h-4 accent-[#4E6E5D]">
         </label>
 
         <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
@@ -1627,7 +1070,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             Lưu tạm để test
           </button>
           <button type="button" onclick="exportPortalHtml()" class="tactile flex-1 py-2.5 rounded-xl bg-sage hover:bg-sage-hover text-white text-sm font-semibold shadow-soft flex items-center justify-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4 h-4"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+            <i data-lucide="download" class="w-4 h-4"></i>
             <span>Xuất index.html đăng web</span>
           </button>
         </div>
@@ -1639,15 +1082,22 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   <div id="toast-container" class="fixed bottom-5 right-5 z-[70] flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
 
   <script>
-    // Cấu hình mặc định của Cổng Tải BlackBean
+    const PORTAL_STORAGE_KEY = 'blackbean_portal_runtime_cfg_v1';
+
+    // Cấu hình mặc định của Cổng Tải BlackBean (giữ nguyên toàn bộ thông số COWSAP v1.5)
     let portalConfig = {
-      winUrl: '',
+      winUrl: 'https://drive.google.com/file/d/1FBpQmD6sjAbwohhhF7d37LvpMTC5bBmY/view?usp=sharing',
       apkUrl: '',
       webUrl: 'https://papaya-boba-9d8526.netlify.app',
-      web3formsKey: '',
+      rooWebUrl: 'roocozy.html',
+      rooWinUrl: '',
+      rooPortUrl: '',
+      rooApkUrl: '',
+      rooVideoUrl: '',
+      web3formsKey: '70e6efc1-f875-4cef-845d-bf05770e91cb',
       contact: 'blackbean.office.studio@gmail.com',
-      siteUrl: 'https://blackbean-web.netlify.app',
-      hideCeoBtn: false
+      siteUrl: 'https://blackbeanstudio.netlify.app',
+      hideCeoBtn: true
     };
 
     function initPortal() {
@@ -1659,19 +1109,55 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         } catch (e) {}
       }
 
-      if (portalConfig.hideCeoBtn) {
+      // Đồng bộ nếu CEO lưu tạm bằng nút Lưu tạm để test
+      try {
+        const localRaw = localStorage.getItem(PORTAL_STORAGE_KEY);
+        if (localRaw) {
+          portalConfig = { ...portalConfig, ...JSON.parse(localRaw) };
+        }
+      } catch (e) {}
+
+      // Cho phép CEO mở lại nút Cài link bằng ?ceo=1 trên URL
+      const params = new URLSearchParams(window.location.search);
+      const ceoOverride = params.get('ceo') === '1';
+
+      if (portalConfig.hideCeoBtn && !ceoOverride) {
         const btn = document.getElementById('ceo-config-btn');
         if (btn) btn.classList.add('hidden');
       }
 
       updateFooterContact();
+      updateRooBadges();
       lucide.createIcons();
+
+      if (ceoOverride) {
+        openConfigModal();
+      }
     }
 
     function updateFooterContact() {
       const el = document.getElementById('footer-contact-text');
       if (el && portalConfig.contact) {
         el.textContent = portalConfig.contact;
+      }
+    }
+
+    function updateRooBadges() {
+      const winBadge = document.getElementById('roo-win-badge');
+      const apkBadge = document.getElementById('roo-apk-badge');
+      if (winBadge) {
+        const ready = !!(portalConfig.rooWinUrl || portalConfig.rooPortUrl);
+        winBadge.textContent = ready ? 'v1.7.2 · .EXE / ZIP' : 'Chuẩn bị phát hành';
+        winBadge.className = ready
+          ? 'text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sage-soft border border-sage-border text-sage-text'
+          : 'text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sand-soft border border-sand-border text-sand-text';
+      }
+      if (apkBadge) {
+        const ready = !!portalConfig.rooApkUrl;
+        apkBadge.textContent = ready ? 'v1.7.2 · .APK' : 'Chuẩn bị phát hành';
+        apkBadge.className = ready
+          ? 'text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sage-soft border border-sage-border text-sage-text'
+          : 'text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-sand-soft border border-sand-border text-sand-text';
       }
     }
 
@@ -1689,6 +1175,26 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       }
       window.open(target.url, '_blank', 'noopener,noreferrer');
       showToast(`Đang mở liên kết tải ${target.name}...`, 'success');
+    }
+
+    function handleRooAction(platform) {
+      const urlMap = {
+        web:  { url: portalConfig.rooWebUrl || 'roocozy.html', name: 'ROO – My Little Café (v1.7.2)' },
+        win:  { url: portalConfig.rooWinUrl, name: 'RooCozy Windows Installer (.EXE)' },
+        port: { url: portalConfig.rooPortUrl, name: 'RooCozy Windows Portable (.ZIP)' },
+        apk:  { url: portalConfig.rooApkUrl, name: 'RooCozy Android (.APK)' }
+      };
+      const target = urlMap[platform];
+      if (!target || !target.url) {
+        showToast(`Bản ${target ? target.name : 'ROO'} chưa gắn link tải trong cấu hình CEO (bạn có thể gắn bằng ?ceo=1). Bạn có thể bấm "Chơi RooCozy v1.7.2 ngay" trên trình duyệt!`, 'info', 4400);
+        return;
+      }
+      if (/^https?:\/\//i.test(target.url)) {
+        window.open(target.url, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.href = target.url;
+      }
+      showToast(`Đang mở ${target.name}...`, 'success');
     }
 
     function openWebAppLink() {
@@ -1711,9 +1217,15 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       document.getElementById('cfg-win-url').value = portalConfig.winUrl || '';
       document.getElementById('cfg-apk-url').value = portalConfig.apkUrl || '';
       document.getElementById('cfg-web-url').value = portalConfig.webUrl || '';
+      document.getElementById('cfg-roo-web-url').value = portalConfig.rooWebUrl || 'roocozy.html';
+      document.getElementById('cfg-roo-win-url').value = portalConfig.rooWinUrl || '';
+      document.getElementById('cfg-roo-port-url').value = portalConfig.rooPortUrl || '';
+      document.getElementById('cfg-roo-apk-url').value = portalConfig.rooApkUrl || '';
+      document.getElementById('cfg-roo-video-url').value = portalConfig.rooVideoUrl || '';
       document.getElementById('cfg-web3forms-key').value = portalConfig.web3formsKey || '';
       document.getElementById('cfg-contact').value = portalConfig.contact || '';
-      document.getElementById('cfg-site-url').value = portalConfig.siteUrl || 'https://blackbean-web.netlify.app';
+      document.getElementById('cfg-site-url').value = portalConfig.siteUrl || 'https://blackbeanstudio.netlify.app';
+      document.getElementById('cfg-hide-ceo-btn').checked = !!portalConfig.hideCeoBtn;
       document.getElementById('config-modal').classList.add('open');
       lucide.createIcons();
     }
@@ -1730,17 +1242,25 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       portalConfig.winUrl = document.getElementById('cfg-win-url').value.trim();
       portalConfig.apkUrl = document.getElementById('cfg-apk-url').value.trim();
       portalConfig.webUrl = document.getElementById('cfg-web-url').value.trim();
+      portalConfig.rooWebUrl = document.getElementById('cfg-roo-web-url').value.trim() || 'roocozy.html';
+      portalConfig.rooWinUrl = document.getElementById('cfg-roo-win-url').value.trim();
+      portalConfig.rooPortUrl = document.getElementById('cfg-roo-port-url').value.trim();
+      portalConfig.rooApkUrl = document.getElementById('cfg-roo-apk-url').value.trim();
+      portalConfig.rooVideoUrl = document.getElementById('cfg-roo-video-url').value.trim();
       portalConfig.web3formsKey = document.getElementById('cfg-web3forms-key').value.trim();
       portalConfig.contact = document.getElementById('cfg-contact').value.trim() || 'blackbean.office.studio@gmail.com';
-      portalConfig.siteUrl = (document.getElementById('cfg-site-url').value.trim() || 'https://blackbean-web.netlify.app').replace(/\/+$/, '');
+      portalConfig.siteUrl = (document.getElementById('cfg-site-url').value.trim() || 'https://blackbeanstudio.netlify.app').replace(/\/+$/, '');
+      portalConfig.hideCeoBtn = document.getElementById('cfg-hide-ceo-btn').checked;
+      try { localStorage.setItem(PORTAL_STORAGE_KEY, JSON.stringify(portalConfig)); } catch (e) {}
       updateFooterContact();
+      updateRooBadges();
     }
 
     document.getElementById('portal-config-form').addEventListener('submit', (e) => {
       e.preventDefault();
       readConfigFromForm();
       closeConfigModal();
-      showToast('Đã lưu cấu hình tạm thời! Bạn có thể bấm gửi góp ý thử ngay.', 'success');
+      showToast('Đã lưu cấu hình tạm thời (đồng bộ sang cả roo.html)!', 'success');
     });
 
     function exportPortalHtml() {
@@ -1748,12 +1268,20 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       const hideBtn = document.getElementById('cfg-hide-ceo-btn').checked;
 
       const cloned = document.documentElement.cloneNode(true);
+      // Tự động dọn sạch script chèn thừa nếu xuất từ bản xem trước
+      cloned.querySelectorAll('[data-bard-client-injected="true"]').forEach(el => el.remove());
+
       const meta = cloned.querySelector('#portal-config-meta');
       if (meta) {
         meta.setAttribute('content', JSON.stringify({
           winUrl: portalConfig.winUrl,
           apkUrl: portalConfig.apkUrl,
           webUrl: portalConfig.webUrl,
+          rooWebUrl: portalConfig.rooWebUrl,
+          rooWinUrl: portalConfig.rooWinUrl,
+          rooPortUrl: portalConfig.rooPortUrl,
+          rooApkUrl: portalConfig.rooApkUrl,
+          rooVideoUrl: portalConfig.rooVideoUrl,
           web3formsKey: portalConfig.web3formsKey,
           contact: portalConfig.contact,
           siteUrl: portalConfig.siteUrl,
@@ -1761,7 +1289,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         }));
       }
 
-      const baseSite = portalConfig.siteUrl || 'https://blackbean-web.netlify.app';
+      const baseSite = portalConfig.siteUrl || 'https://blackbeanstudio.netlify.app';
       const ogUrl = cloned.querySelector('#og-url-meta');
       const ogImg = cloned.querySelector('#og-image-meta');
       const twImg = cloned.querySelector('#twitter-image-meta');
@@ -1786,7 +1314,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       URL.revokeObjectURL(url);
 
       closeConfigModal();
-      showToast('Đã xuất tệp index.html bản v1.5! Hãy tải lên kho electricshu/blackbean-web.', 'success', 4500);
+      showToast('Đã xuất tệp index.html sạch! Hãy đẩy lên kho GitHub blackbean-web.', 'success', 4500);
     }
 
     function downloadOgBannerPng() {
@@ -1796,6 +1324,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         canvas.height = 630;
         const ctx = canvas.getContext('2d');
 
+        // Giữ nguyên phong cách og-banner (1).png của BlackBean Studio!
         const bgGrad = ctx.createLinearGradient(0, 0, 1200, 630);
         bgGrad.addColorStop(0, '#F7F6F2');
         bgGrad.addColorStop(1, '#E8EFEA');
@@ -1838,11 +1367,11 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
           ctx.fillStyle = '#E5EFE9';
           ctx.beginPath();
-          ctx.roundRect(316, 148, 340, 38, 19);
+          ctx.roundRect(316, 148, 456, 38, 19);
           ctx.fill();
           ctx.fillStyle = '#2F5241';
-          ctx.font = '600 18px "Be Vietnam Pro", sans-serif';
-          ctx.fillText('OFFICIAL PORTAL · COWSAP v1.5', 338, 173);
+          ctx.font = '600 17px "Be Vietnam Pro", sans-serif';
+          ctx.fillText('OFFICIAL PORTAL · COWSAP v1.5 & ROOCOZY v1.7.2', 336, 173);
 
           ctx.fillStyle = '#1E2421';
           ctx.font = '800 68px "Plus Jakarta Sans", sans-serif';
@@ -1852,22 +1381,22 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           ctx.fillText('Bean Studio', 314 + w, 256);
 
           ctx.fillStyle = '#1E2421';
-          ctx.font = '700 32px "Be Vietnam Pro", sans-serif';
-          ctx.fillText('COWSAP v1.5 — Két sắt mật khẩu AES-256 & 2FA', 132, 366);
+          ctx.font = '700 30px "Be Vietnam Pro", sans-serif';
+          ctx.fillText('COWSAP v1.5 (AES-256)  ·  ROO – My Little Café v1.7.2', 132, 366);
 
           ctx.fillStyle = '#6C736E';
-          ctx.font = '400 24px "Be Vietnam Pro", sans-serif';
-          ctx.fillText('Mã PIN 6 số · TOTP 30s · Nhập CSV Chrome · Windows, Android & iOS', 132, 412);
+          ctx.font = '400 23px "Be Vietnam Pro", sans-serif';
+          ctx.fillText('Két sắt mật khẩu 2FA & Game quán cà phê ấm cúng · Web, Windows & Android', 132, 412);
 
           ctx.fillStyle = '#E8E6DF';
           ctx.fillRect(132, 456, 936, 2);
 
           ctx.fillStyle = '#4E6E5D';
-          ctx.font = '600 20px "JetBrains Mono", monospace';
-          ctx.fillText('com.blackbean.cowsap  ·  CEO baebless', 132, 502);
+          ctx.font = '600 19px "JetBrains Mono", monospace';
+          ctx.fillText('blackbeanstudio.netlify.app  ·  CEO baebless', 132, 502);
 
           ctx.fillStyle = '#6C736E';
-          ctx.font = '500 20px "Be Vietnam Pro", sans-serif';
+          ctx.font = '500 19px "Be Vietnam Pro", sans-serif';
           ctx.fillText(portalConfig.contact || 'blackbean.office.studio@gmail.com', 690, 502);
 
           canvas.toBlob((blob) => {
@@ -1880,7 +1409,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('Đã tải ảnh bìa og-banner.png (bản v1.5)!', 'success', 4000);
+            showToast('Đã tải ảnh bìa og-banner.png (COWSAP v1.5 & RooCozy v1.7.2)!', 'success', 4000);
           }, 'image/png');
         };
         img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(beanSvg)));
@@ -1900,7 +1429,6 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         const topic = formData.get('topic') || 'Góp ý chung';
         const message = (formData.get('message') || '').trim();
 
-        // Nếu chưa dán Access Key của Web3Forms
         if (!portalConfig.web3formsKey) {
           if (!portalConfig.hideCeoBtn) {
             showToast('Chưa dán mã Web3Forms Access Key! Hãy bấm "Cài link (CEO)" để dán mã nhận Gmail.', 'info', 5000);
@@ -2025,4 +1553,5 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     window.addEventListener('DOMContentLoaded', initPortal);
   </script>
 
-</body></html>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROO – My Little Café (RooCozy v1.7.2) — BlackBean Studio</title>
+  <meta name="description" content="Trang sản phẩm chính thức ROO – My Little Café (RooCozy v1.7.2) từ BlackBean Studio. Xem ảnh gameplay, 13 nhân vật, changelog v1.2–v1.6 và tải bản Web, Windows (.EXE / Portable) &amp; Android (.APK).">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlackBean Studio">
+  <meta property="og:title" content="ROO – My Little Café (RooCozy v1.7.2) — BlackBean Studio">
+  <meta property="og:description" content="50% Game Quán Cà Phê Ấm Cúng · 50% Góc Học Tập Pomodoro &amp; ROO Jukebox. Phiên bản v1.6 mở rộng 7 bàn &amp; Sân Vườn Ngoài Trời!">
+  <meta property="og:image" content="https://blackbeanstudio.netlify.app/og-banner.png">
+
+  <!-- Inline Favicon: BlackBean Minimal Bean -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none'%3E%3Crect width='200' height='200' rx='48' fill='%23E5EFE9'/%3E%3Cg transform='rotate(-24 100 100)'%3E%3Cpath d='M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z' fill='%23232A26'/%3E%3Cpath d='M 79 84 C 87 94, 87 106, 79 116' stroke='%23E5EFE9' stroke-width='7.5' stroke-linecap='round'/%3E%3Cpath d='M 118 63 C 129 73, 134 86, 133 101' stroke='%236F9380' stroke-width='6.5' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
+
+  <!-- Google Fonts (Đúng bộ font gốc BlackBean Studio) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (Đúng bộ màu gốc index.html của BlackBean Studio) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', '"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', '"Be Vietnam Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            canvas: '#F7F6F2',
+            canvas2: '#F0EEE7',
+            surface: '#FFFFFF',
+            hairline: '#E8E6DF',
+            ink: '#1E2421',
+            muted: '#6C736E',
+            sage: {
+              DEFAULT: '#4E6E5D',
+              hover: '#3F5B4C',
+              soft: '#E5EFE9',
+              border: '#CFE0D6',
+              text: '#2F5241',
+            },
+            slatep: {
+              soft: '#E3EAF0',
+              text: '#2D4A63',
+              border: '#CBD8E4',
+            },
+            sand: {
+              soft: '#F2EAE1',
+              text: '#6B4F35',
+              border: '#E4D5C5',
+            },
+            lavender: {
+              soft: '#EBE6F2',
+              text: '#4B3B6B',
+              border: '#D8CEE6',
+            }
+          },
+          boxShadow: {
+            soft: '0 2px 12px rgba(28, 35, 33, 0.04)',
+            'soft-md': '0 10px 30px rgba(28, 35, 33, 0.06)',
+            'soft-lg': '0 20px 48px rgba(28, 35, 33, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" crossorigin="anonymous"></script>
+
+  <style>
+    :root { --spring: cubic-bezier(0.22, 1, 0.36, 1); }
+    body {
+      background-color: #F7F6F2;
+      color: #1E2421;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tactile {
+      transition: transform 0.22s var(--spring), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.22s ease, color 0.2s ease;
+      will-change: transform;
+    }
+    .tactile:hover { transform: translateY(-1.5px); }
+    .tactile:active { transform: scale(0.965) translateY(0); }
+
+    .tactile-card {
+      background: #FFFFFF;
+      border: 1px solid #E8E6DF;
+      box-shadow: 0 2px 12px rgba(28, 35, 33, 0.035);
+      transition: transform 0.26s var(--spring), border-color 0.22s ease, box-shadow 0.26s ease;
+    }
+    .tactile-card:hover {
+      transform: translateY(-3px);
+      border-color: #CFE0D6;
+      box-shadow: 0 14px 32px rgba(28, 35, 33, 0.065);
+    }
+
+    @keyframes rooSteam { 0% { opacity: 0; transform: translateY(3px); } 45% { opacity: 0.85; } 100% { opacity: 0; transform: translateY(-7px); } }
+    .roo-steam { animation: rooSteam 2.6s ease-in-out infinite; }
+    @keyframes pomBlink { 0%, 44%, 48%, 94%, 100% { transform: scaleY(1); } 46%, 96% { transform: scaleY(0.12); } }
+    .roo-eyes { transform-box: fill-box; transform-origin: center; animation: pomBlink 5s ease-in-out infinite; }
+
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(0.96); } }
+    .toast-enter { animation: toastIn 0.28s var(--spring) forwards; }
+    .toast-exit { animation: toastOut 0.22s ease forwards; }
+  </style>
+</head>
+<body class="font-sans selection:bg-sage-soft selection:text-sage-text">
+
+  <!-- 1. THANH ĐIỀU HƯỚNG (GIỐNG HỆT INDEX.HTML BLACKBEAN) -->
+  <header class="sticky top-0 z-30 bg-canvas/90 backdrop-blur-md border-b border-hairline">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="index.html" class="flex items-center gap-2.5 group shrink-0">
+          <div class="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+              <rect width="200" height="200" rx="48" fill="#E5EFE9"></rect>
+              <rect x="2" y="2" width="196" height="196" rx="46" stroke="#C9DDD1" stroke-width="4"></rect>
+              <g transform="rotate(-24 100 100)">
+                <path d="M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z" fill="#232A26"></path>
+                <path d="M 79 84 C 87 94, 87 106, 79 116" stroke="#E5EFE9" stroke-width="8" stroke-linecap="round"></path>
+                <path d="M 118 63 C 129 73, 134 86, 133 101" stroke="#6F9380" stroke-width="7" stroke-linecap="round"></path>
+                <circle cx="129" cy="117" r="4" fill="#6F9380"></circle>
+              </g>
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="font-display font-bold text-base tracking-tight text-ink">Black<span class="text-sage">Bean</span></span>
+            <span class="block text-[10px] uppercase tracking-[0.16em] text-muted font-medium">← Về trang chủ</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted">
+        <a href="#showcase" class="hover:text-ink transition-colors">Gameplay &amp; Video</a>
+        <a href="#features" class="hover:text-ink transition-colors">Tính năng v1.7.2</a>
+        <a href="#cast" class="hover:text-ink transition-colors">13 Nhân vật</a>
+        <a href="#download" class="hover:text-ink transition-colors">Tải xuống</a>
+        <a href="#changelog" class="hover:text-ink transition-colors">Changelog</a>
+      </nav>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="index.html#download" class="hidden sm:inline-flex tactile px-3 py-2 rounded-xl bg-surface hover:bg-sage-soft border border-hairline text-xs font-semibold text-muted hover:text-ink">
+          COWSAP v1.5
+        </a>
+        <button type="button" onclick="handleRooAction('web')" class="tactile px-4 py-2 rounded-xl bg-sage hover:bg-sage-hover text-xs sm:text-sm font-semibold text-white shadow-soft flex items-center gap-1.5">
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+          <span>Chơi v1.7.2</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO ROO – MY LITTLE CAFÉ v1.6 -->
+  <section id="top" class="pt-12 pb-16 sm:pt-16 sm:pb-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sage-soft border border-sage-border text-sage-text text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-sage"></span>
+          <span>Phát hành mới nhất · <strong>ROO – My Little Café (v1.7.2)</strong></span>
+        </div>
+
+        <h1 class="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-ink leading-[1.14]">
+          ROO – My Little Café <span class="text-sage">v1.7.2</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-muted leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          Không gian tiệm cà phê 2.5D ấm áp kết hợp đồng hồ tập trung Pomodoro và máy nghe nhạc <strong>ROO Jukebox</strong>. Đồng hành cùng chủ quán <strong>Bé Chó Roo</strong> và vị khách đặc biệt <strong>Bé Bò Sữa 💝</strong>, nâng cấp quầy Barista và mở rộng ra <strong>Sân Vườn Ngoài Trời 7 bàn</strong>.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
+          <button type="button" onclick="handleRooAction('web')" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-sage hover:bg-sage-hover text-white font-semibold text-sm shadow-soft-md flex items-center justify-center gap-2">
+            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+            <span>Chơi ngay trên trình duyệt</span>
+          </button>
+          <a href="#download" class="tactile w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink font-semibold text-sm shadow-soft flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4 text-sage"></i>
+            <span>Tải Windows / Android</span>
+          </a>
+        </div>
+
+        <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-muted">
+          <span class="flex items-center gap-1.5"><i data-lucide="trees" class="w-4 h-4 text-sage"></i> 7 bàn &amp; Sân Vườn ROO</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="disc-3" class="w-4 h-4 text-sage"></i> 6 bài Jazz + Thêm MP3</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="save" class="w-4 h-4 text-sage"></i> Lưu cục bộ &amp; Sao lưu .JSON</span>
+        </div>
+      </div>
+
+      <!-- Right Release Summary Card -->
+      <div class="lg:col-span-5">
+        <div class="bg-surface border border-hairline rounded-[2rem] p-6 sm:p-7 shadow-soft-lg space-y-5">
+          <div class="flex items-center gap-4 pb-4 border-b border-hairline">
+            <div class="w-20 h-20 shrink-0 rounded-2xl bg-[#FDF2E3] border border-sand-border p-1.5 shadow-soft">
+              <svg viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="Logo RooCozy">
+                <path d="M27 42 C18 22, 33 14, 44 28 C47 32, 42 41, 33 46 Z" fill="#262325" stroke="#181517" stroke-width="2.8" stroke-linejoin="round"></path>
+                <path d="M101 42 C110 22, 95 14, 84 28 C81 32, 86 41, 95 46 Z" fill="#262325" stroke="#181517" stroke-width="2.8" stroke-linejoin="round"></path>
+                <path d="M26 70 C22 40, 38 22, 64 22 C90 22, 106 40, 102 70 C105 94, 92 108, 64 108 C36 108, 23 94, 26 70 Z" fill="#2B282A" stroke="#181517" stroke-width="3"></path>
+                <path d="M33 58 C33 44, 43 38, 52 39 C58 39.5, 61.5 44.5, 64 47.5 C66.5 44.5, 70 39.5, 76 39 C85 38, 95 44, 95 58 C96 71, 85 79, 64 79 C43 79, 32 71, 33 58 Z" fill="#F7D08A"></path>
+                <ellipse cx="64" cy="65" rx="16" ry="10.5" fill="#FFF3D4"></ellipse>
+                <ellipse cx="41" cy="63" rx="5.5" ry="3.2" fill="#F29E9E" opacity="0.72"></ellipse>
+                <ellipse cx="87" cy="63" rx="5.5" ry="3.2" fill="#F29E9E" opacity="0.72"></ellipse>
+                <g class="roo-eyes">
+                  <circle cx="49" cy="54" r="4.6" fill="#1E1917"></circle><circle cx="47.4" cy="52.3" r="1.7" fill="#FFFFFF"></circle>
+                  <circle cx="79" cy="54" r="4.6" fill="#1E1917"></circle><circle cx="77.4" cy="52.3" r="1.7" fill="#FFFFFF"></circle>
+                </g>
+                <ellipse cx="64" cy="60.5" rx="4.8" ry="3.3" fill="#231D1A"></ellipse>
+                <path d="M58 66 Q61 70 64 66 Q67 70 70 66" fill="none" stroke="#231D1A" stroke-width="2.2" stroke-linecap="round"></path>
+                <path d="M40 80 L88 80 L91 105 Q64 111 37 105 Z" fill="#4E6E5D" stroke="#2D4538" stroke-width="2.4"></path>
+                <path d="M58 75 Q60 69 58 64" fill="none" stroke="#FFFDF9" stroke-width="2.2" stroke-linecap="round" class="roo-steam"></path>
+                <path d="M70 75 Q72 69 70 64" fill="none" stroke="#FFFDF9" stroke-width="2.2" stroke-linecap="round" class="roo-steam" style="animation-delay:0.8s"></path>
+                <rect x="49" y="79" width="30" height="24" rx="7" fill="#FFFDF9" stroke="#4D3E35" stroke-width="2.5"></rect>
+                <path d="M79 84 Q87 84 87 91 Q87 98 79 98" fill="none" stroke="#4D3E35" stroke-width="2.4"></path>
+                <ellipse cx="64" cy="83" rx="11" ry="3.2" fill="#8C583A"></ellipse>
+                <ellipse cx="47" cy="91" rx="8.5" ry="6.5" transform="rotate(-14 47 91)" fill="#2B282A" stroke="#181517" stroke-width="2.4"></ellipse>
+                <ellipse cx="47" cy="92.5" rx="5" ry="3.5" transform="rotate(-14 47 92.5)" fill="#F7D08A"></ellipse>
+                <ellipse cx="81" cy="91" rx="8.5" ry="6.5" transform="rotate(14 81 91)" fill="#2B282A" stroke="#181517" stroke-width="2.4"></ellipse>
+                <ellipse cx="81" cy="92.5" rx="5" ry="3.5" transform="rotate(14 81 92.5)" fill="#F7D08A"></ellipse>
+              </svg>
+            </div>
+            <div>
+              <h2 class="font-display font-bold text-lg text-ink">RooCozy v1.7.2</h2>
+              <p class="text-xs text-muted mt-0.5">Phát triển bởi BlackBean Studio · CEO baebless</p>
+              <div class="flex items-center gap-1.5 mt-2">
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-sage-soft text-sage-text">Miễn phí 100%</span>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-sand-soft text-sand-text">Không quảng cáo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-2xl bg-canvas border border-hairline">
+              <span class="text-muted block">Phiên bản</span>
+              <strong class="font-mono text-ink text-sm">v1.7.2 (11/2026)</strong>
+            </div>
+            <div class="p-3 rounded-2xl bg-canvas border border-hairline">
+              <span class="text-muted block">Nhân vật</span>
+              <strong class="text-ink text-sm">14 khách + Chủ quán Roo</strong>
+            </div>
+            <div class="p-3 rounded-2xl bg-canvas border border-hairline">
+              <span class="text-muted block">Không gian</span>
+              <strong class="text-ink text-sm">7 bàn · 2 khu vực</strong>
+            </div>
+            <div class="p-3 rounded-2xl bg-canvas border border-hairline">
+              <span class="text-muted block">Gói ứng dụng</span>
+              <strong class="font-mono text-ink text-xs">com.blackbean.roocozy</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. ẢNH & VIDEO GAMEPLAY (5 CẢNH + XEM TRƯỚC LIVE) -->
+  <section id="showcase" class="py-16 px-4 sm:px-6 bg-canvas2/60 border-y border-hairline">
+    <div class="max-w-6xl mx-auto space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Xem trước gameplay</span>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">5 góc trải nghiệm nổi bật trong tiệm ROO</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="setShowcaseMode('gallery')" id="mode-btn-gallery" class="tactile px-4 py-2 rounded-xl text-xs font-semibold bg-sage text-white shadow-soft">Ảnh Gameplay (5 cảnh)</button>
+          <button type="button" onclick="setShowcaseMode('video')" id="mode-btn-video" class="tactile px-4 py-2 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted hover:text-ink">Video / Chơi thử</button>
+        </div>
+      </div>
+
+      <!-- Gallery Panel -->
+      <div id="showcase-gallery-panel" class="bg-surface border border-hairline rounded-3xl p-4 sm:p-6 shadow-soft space-y-4">
+        <div id="gallery-stage" class="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-hairline bg-canvas"></div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+          <div class="space-y-1 max-w-xl">
+            <h3 id="gallery-title" class="font-display text-base sm:text-lg font-bold text-ink"></h3>
+            <p id="gallery-desc" class="text-xs sm:text-sm text-muted leading-relaxed"></p>
+          </div>
+          <div id="gallery-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Video / Live Preview Panel -->
+      <div id="showcase-video-panel" class="hidden bg-surface border border-hairline rounded-3xl p-4 sm:p-6 shadow-soft space-y-4">
+        <div id="video-stage-box" class="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-hairline bg-[#232A26] flex flex-col items-center justify-center text-center p-6"></div>
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+          <span>CEO có thể gắn link YouTube Trailer trong mục <code>?ceo=1</code> trên trang chủ — hoặc bấm chơi thử bản live ngay tại khung trên.</span>
+          <button type="button" onclick="loadLiveIframePreview()" class="tactile px-3.5 py-2 rounded-xl bg-sage-soft hover:bg-sage text-sage-text hover:text-white border border-sage-border font-semibold">
+            Chạy thử RooCozy v1.7.2 trực tiếp
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TÍNH NĂNG NỔI BẬT v1.6 -->
+  <section id="features" class="py-16 sm:py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="max-w-2xl">
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Tính năng chính thức v1.7.2</span>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">Quản lý quán cà phê có chiều sâu &amp; hỗ trợ tập trung mỗi ngày</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sage-soft text-sage-text flex items-center justify-center mb-4"><i data-lucide="trees" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">Mở rộng 7 bàn &amp; Sân Vườn ROO</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">Lên cấp mở Bàn Cửa Sổ số 4 (Lv.2), Sân Vườn Ngoài Trời có mái hiên Take-away (Lv.3) và Chòi Hoa + Hồ Cá Koi VIP (Lv.4, thưởng +15% 🫘).</p>
+        </div>
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-slatep-soft text-slatep-text flex items-center justify-center mb-4"><i data-lucide="disc-3" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">ROO Jukebox + Nhạc MP3 cá nhân</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">6 bản Acoustic Cafe Jazz Pháp (dẫn đầu là <em>Automne chez Roo</em>), trộn tiếng Mưa &amp; Lò sưởi, Shuffle/Repeat và nút thêm tệp MP3/WAV/OGG từ máy.</p>
+        </div>
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sand-soft text-sand-text flex items-center justify-center mb-4"><i data-lucide="coffee" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">Nâng cấp 4 thiết bị Barista</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">Máy Espresso Ý, Máy Xay Hạt, Tủ Bánh Ngọt và Chuông Phục Vụ nâng 3 cấp — đổi ngoại hình ngay trên quầy, tăng Ly Tuyệt Hảo ✨ &amp; Combo 🍰.</p>
+        </div>
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-lavender-soft text-lavender-text flex items-center justify-center mb-4"><i data-lucide="bar-chart-3" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">Sổ Doanh Thu &amp; Biểu đồ 7 ngày</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">Thống kê doanh thu hôm nay, số ly đã bán, tổng Tip, món Best Seller, biểu đồ cột 7 ngày gần nhất và nhật ký phục vụ 12 đơn.</p>
+        </div>
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sage-soft text-sage-text flex items-center justify-center mb-4"><i data-lucide="timer" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">Pomodoro, To-Do &amp; 4 Thời tiết</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">Roo đeo kính ngồi học cùng bạn (+5 🫘/phút, tự pha cho khách khi bạn tập trung), Giấy Nhớ To-Do (+15 🫘), Sáng / Hoàng hôn / Đêm mưa / Đêm sao.</p>
+        </div>
+        <div class="bg-surface border border-hairline rounded-2xl p-5 shadow-soft">
+          <div class="w-10 h-10 rounded-xl bg-sand-soft text-sand-text flex items-center justify-center mb-4"><i data-lucide="camera" class="w-5 h-5"></i></div>
+          <h3 class="font-display font-bold text-base text-ink">Tủ Đồ Roo, Quà Lưu Niệm &amp; Bưu Thiếp</h3>
+          <p class="text-xs text-muted mt-1.5 leading-relaxed">Phối mũ, khăn, kính &amp; 5 màu tạp dề cho Roo; sưu tầm 12 Quà Lưu Niệm khách quen, Zen Mode và chụp ảnh Bưu Thiếp <code>.PNG</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. DÀN 13 NHÂN VẬT -->
+  <section id="cast" class="py-16 px-4 sm:px-6 bg-canvas2/60 border-y border-hairline">
+    <div class="max-w-6xl mx-auto space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Nhân vật trong tiệm</span>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">Chủ quán Roo &amp; 12 vị khách nhân hóa 2 chân</h2>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" onclick="renderCast('all')" data-cf="all" class="cf-btn tactile px-3 py-1.5 rounded-xl text-xs font-semibold bg-sage text-white">Tất cả (13)</button>
+          <button type="button" onclick="renderCast('special')" data-cf="special" class="cf-btn tactile px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted">Chủ quán &amp; Đặc biệt</button>
+          <button type="button" onclick="renderCast('rare')" data-cf="rare" class="cf-btn tactile px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted">Hiếm &amp; Cameo</button>
+          <button type="button" onclick="renderCast('legendary')" data-cf="legendary" class="cf-btn tactile px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted">Huyền Thoại</button>
+        </div>
+      </div>
+      <div id="cast-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"></div>
+    </div>
+  </section>
+
+  <!-- 6. TẢI XUỐNG ĐA NỀN TẢNG & HƯỚNG DẪN CÀI ĐẶT -->
+  <section id="download" class="py-16 sm:py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="text-center max-w-2xl mx-auto">
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Tải xuống chính thức</span>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-ink mt-2">Chọn phiên bản ROO v1.7.2 cho thiết bị của bạn</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="tactile-card rounded-3xl p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-sage-soft border border-sage-border text-sage-text flex items-center justify-center"><i data-lucide="globe" class="w-5 h-5"></i></div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sage-soft text-sage-text font-semibold">Sẵn sàng</span>
+            </div>
+            <h3 class="font-display font-bold text-lg text-ink">Web &amp; iPhone (PWA)</h3>
+            <p class="text-xs text-muted leading-relaxed">Chơi ngay trên trình duyệt, thêm ra màn hình chính iPhone/Android như app độc lập.</p>
+          </div>
+          <button type="button" onclick="handleRooAction('web')" class="tactile w-full py-2.5 rounded-xl bg-sage hover:bg-sage-hover text-white text-xs font-semibold shadow-soft flex items-center justify-center gap-1.5">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i><span>Chơi ngay (v1.7.2)</span>
+          </button>
+        </div>
+
+        <div class="tactile-card rounded-3xl p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-slatep-soft border border-slatep-border text-slatep-text flex items-center justify-center"><i data-lucide="monitor" class="w-5 h-5"></i></div>
+              <span id="badge-win" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sand-soft text-sand-text font-semibold">Chờ GĐ 5</span>
+            </div>
+            <h3 class="font-display font-bold text-lg text-ink">Windows (.EXE)</h3>
+            <p class="text-xs text-muted leading-relaxed">Bộ cài đặt Windows 10/11 (64-bit) tạo shortcut Bé Chó Roo trên Desktop, chạy 100% offline.</p>
+          </div>
+          <button type="button" onclick="handleRooAction('win')" class="tactile w-full py-2.5 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-sage"></i><span>Tải bộ cài .EXE</span>
+          </button>
+        </div>
+
+        <div class="tactile-card rounded-3xl p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-lavender-soft border border-lavender-border text-lavender-text flex items-center justify-center"><i data-lucide="folder-archive" class="w-5 h-5"></i></div>
+              <span id="badge-port" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sand-soft text-sand-text font-semibold">Chờ GĐ 5</span>
+            </div>
+            <h3 class="font-display font-bold text-lg text-ink">Windows Portable</h3>
+            <p class="text-xs text-muted leading-relaxed">Tệp nén <code>.ZIP</code> giải nén mở chơi ngay không cần cài đặt hay quyền Admin.</p>
+          </div>
+          <button type="button" onclick="handleRooAction('port')" class="tactile w-full py-2.5 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-sage"></i><span>Tải bản Portable</span>
+          </button>
+        </div>
+
+        <div class="tactile-card rounded-3xl p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-sand-soft border border-sand-border text-sand-text flex items-center justify-center"><i data-lucide="smartphone" class="w-5 h-5"></i></div>
+              <span id="badge-apk" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sand-soft text-sand-text font-semibold">Chờ GĐ 5</span>
+            </div>
+            <h3 class="font-display font-bold text-lg text-ink">Android (.APK)</h3>
+            <p class="text-xs text-muted leading-relaxed">Ứng dụng Android độc lập cho Samsung, Xiaomi, Oppo..., hỗ trợ phát nhạc Jukebox.</p>
+          </div>
+          <button type="button" onclick="handleRooAction('apk')" class="tactile w-full py-2.5 rounded-xl bg-surface hover:bg-sage-soft border border-hairline hover:border-sage-border text-ink text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-sage"></i><span>Tải tệp .APK</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. CHANGELOG CHI TIẾT (v1.2 → v1.6) -->
+  <section id="changelog" class="py-16 px-4 sm:px-6 bg-canvas2/60 border-t border-hairline">
+    <div class="max-w-4xl mx-auto space-y-6">
+      <div>
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-sage">Nhật ký cập nhật</span>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-ink mt-2">Changelog ROO – My Little Café</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-surface border border-sage-border rounded-3xl p-6 shadow-soft space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-sage text-white">v1.7.2</span>
+              <h3 class="font-display font-bold text-base text-ink">Điện Thoại BAEOS (RooShip &amp; Đánh Giá), Thực Đơn 20 Món &amp; Nhịp Khách Thực Tế</h3>
+            </div>
+            <span class="text-xs font-mono text-muted">25/11/2026</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-muted space-y-1.5 list-disc pl-5">
+            <li>Ra mắt điện thoại <strong>📱 BAEOS</strong> khung cố định chuẩn iPhone (có <strong>Dynamic Island Live Activity</strong>): nhận đơn giao hàng <strong>🛵 RooShip</strong> (nâng cấp Xe Đạp → Xe Tay Ga → Drone VIP) và đọc/thả tim <strong>⭐ Đánh Giá Quán</strong> tách biệt hoàn toàn giữa đặt từ xa và ngồi tại bàn.</li>
+            <li>Mở rộng <strong>Thực đơn 20 món Việt · Mỹ · Pháp · Ý</strong> (có <em>Trà Lài Đác Thơm</em> của Bé Bòa &amp; <em>Hồng Trà Sữa</em> của Bé Phúc), khách đổi món linh hoạt &amp; hơn 70 câu thoại phản hồi không lặp lại.</li>
+            <li>Cơ chế thực tế: khách đặt ship ở nhà sẽ không ghé quán trong 2 phút, tỉ lệ khách vào quán cân bằng tự nhiên &amp; tối ưu <strong>Sổ Khách mượt 60fps</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-sage-soft text-sage-text">v1.6.0</span>
+              <h3 class="font-display font-bold text-base text-ink">Mở Rộng Không Gian Quán (7 Bàn &amp; Sân Vườn ROO)</h3>
+            </div>
+            <span class="text-xs font-mono text-muted">25/11/2026</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-muted space-y-1.5 list-disc pl-5">
+            <li>Thêm 3 gói mở rộng theo cấp độ: <em>Bàn Cửa Sổ số 4 (Lv.2)</em>, <em>Khu Sân Vườn Ngoài Trời ROO (Lv.3)</em> và <em>Chòi Hoa + Hồ Cá Koi VIP (Lv.4, thưởng +15% 🫘)</em>.</li>
+            <li>Thêm thanh chuyển khu <strong>🏠 Trong Quán ↔ 🌿 Sân Vườn</strong> kèm chấm báo khách đang chờ; đồng bộ Roo (Tủ đồ, Xoa đầu, Pomodoro) và 4 thời tiết ở cả 2 khu.</li>
+          </ul>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-sand-soft text-sand-text">v1.5.0</span>
+              <h3 class="font-display font-bold text-base text-ink">Nâng Cấp Thiết Bị Barista, Hành Vi Khách &amp; Sổ Doanh Thu</h3>
+            </div>
+            <span class="text-xs font-mono text-muted">24/11/2026</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-muted space-y-1.5 list-disc pl-5">
+            <li>Nâng cấp 4 thiết bị pha chế × 3 cấp độ (đổi ngoại hình trực tiếp trên quầy), 5 nét tính cách khách hàng, <strong>Ly Tuyệt Hảo ✨</strong> và khách <strong>Gọi thêm Combo 🍰</strong>.</li>
+            <li>Bổ sung <strong>Sổ Doanh Thu</strong> với 4 thẻ KPI, biểu đồ cột 7 ngày và nhật ký phục vụ 12 đơn gần nhất.</li>
+          </ul>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-slatep-soft text-slatep-text">v1.4.0</span>
+              <h3 class="font-display font-bold text-base text-ink">ROO Jukebox &amp; Đồng Bộ Nhân Vật 2 Chân</h3>
+            </div>
+            <span class="text-xs font-mono text-muted">24/11/2026</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-muted space-y-1.5 list-disc pl-5">
+            <li>Hoàn thiện <strong>ROO Jukebox</strong> (Shuffle, Repeat, thanh tua tiến độ, <code>PLAYLIST_CONFIG</code> và nút <strong>+ Thêm nhạc MP3/WAV/OGG</strong> từ thiết bị).</li>
+            <li>Đồng bộ 12 vị khách nhân hóa đi 2 chân mặc trang phục vào bên trong quán với hoạt ảnh bước vào, ngồi ghế thưởng thức và vẫy tay ra về; sửa lỗi âm thanh hiệu ứng <code>playSfx</code>.</li>
+          </ul>
+        </div>
+
+        <div class="bg-surface border border-hairline rounded-3xl p-6 shadow-soft space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-canvas text-muted border border-hairline">v1.2 – v1.3</span>
+              <h3 class="font-display font-bold text-base text-ink">Lõi Game RooCozy, Màn Hình Chờ 2.5D &amp; Automne chez Roo</h3>
+            </div>
+            <span class="text-xs font-mono text-muted">11/2026</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-muted space-y-1.5 list-disc pl-5">
+            <li>Xây dựng Màn hình chờ 2.5D đủ 13 nhân vật, đồng hồ Pomodoro, Giấy Nhớ To-Do, Tủ Đồ Roo, Nhiệm Vụ Hàng Ngày, Quà Lưu Niệm, Bưu Thiếp PNG và bản nhạc gốc 32 ô nhịp <em>Automne chez Roo</em>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FOOTER (ĐỒNG BỘ 100% INDEX.HTML) -->
+  <footer class="border-t border-hairline bg-surface py-10 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3.5 text-center sm:text-left">
+        <div class="w-10 h-10 shrink-0">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <rect width="200" height="200" rx="48" fill="#E5EFE9"></rect>
+            <g transform="rotate(-24 100 100)">
+              <path d="M 103 42 C 135 42, 150 67, 148 100 C 146 134, 131 158, 100 158 C 73 158, 55 138, 57 118 C 58 109, 68 106, 68 100 C 68 94, 58 91, 57 82 C 55 62, 74 42, 103 42 Z" fill="#232A26"></path>
+              <path d="M 79 84 C 87 94, 87 106, 79 116" stroke="#E5EFE9" stroke-width="8" stroke-linecap="round"></path>
+              <path d="M 118 63 C 129 73, 134 86, 133 101" stroke="#6F9380" stroke-width="7" stroke-linecap="round"></path>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <p class="font-display font-bold text-sm text-ink">© 2026 BlackBean Studio</p>
+          <p class="text-xs text-muted mt-0.5">Sáng lập &amp; Điều hành bởi CEO <strong class="text-ink">baebless</strong></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="tactile px-4 py-2 rounded-xl bg-canvas hover:bg-sage-soft border border-hairline hover:border-sage-border text-xs font-medium text-ink">
+          ← Về trang chủ BlackBean
+        </a>
+        <a href="index.html#feedback" class="tactile px-4 py-2 rounded-xl bg-sage-soft hover:bg-sage border border-sage-border text-xs font-semibold text-sage-text hover:text-white">
+          Gửi góp ý
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[70] flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+  <script>
+    const PORTAL_STORAGE_KEY = 'blackbean_portal_runtime_cfg_v1';
+    let rooConfig = {
+      rooWebUrl: 'roocozy.html',
+      rooWinUrl: '',
+      rooPortUrl: '',
+      rooApkUrl: '',
+      rooVideoUrl: ''
+    };
+
+    function loadRooConfig() {
+      try {
+        const raw = localStorage.getItem(PORTAL_STORAGE_KEY);
+        if (raw) rooConfig = { ...rooConfig, ...JSON.parse(raw) };
+      } catch (e) {}
+      [
+        { key: 'rooWinUrl', id: 'badge-win', ready: 'Sẵn sàng · .EXE' },
+        { key: 'rooPortUrl', id: 'badge-port', ready: 'Sẵn sàng · .ZIP' },
+        { key: 'rooApkUrl', id: 'badge-apk', ready: 'Sẵn sàng · .APK' }
+      ].forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el && rooConfig[item.key]) {
+          el.textContent = item.ready;
+          el.className = 'text-[11px] font-mono px-2 py-0.5 rounded-full bg-sage-soft text-sage-text font-semibold';
+        }
+      });
+    }
+
+    function handleRooAction(platform) {
+      const map = {
+        web:  { url: rooConfig.rooWebUrl || 'roocozy.html', name: 'ROO – My Little Café (v1.7.2)' },
+        win:  { url: rooConfig.rooWinUrl, name: 'RooCozy Windows (.EXE)' },
+        port: { url: rooConfig.rooPortUrl, name: 'RooCozy Portable (.ZIP)' },
+        apk:  { url: rooConfig.rooApkUrl, name: 'RooCozy Android (.APK)' }
+      };
+      const target = map[platform];
+      if (!target || !target.url) {
+        showToast(`Bản ${target ? target.name : 'ROO'} chưa gắn link tải .EXE (CEO có thể cập nhật trong trang chủ BlackBean ?ceo=1). Bạn có thể bấm "Chơi ngay (v1.7.2)" trên trình duyệt!`, 'info', 4200);
+        return;
+      }
+      if (/^https?:\/\//i.test(target.url)) window.open(target.url, '_blank', 'noopener,noreferrer');
+      else window.location.href = target.url;
+    }
+
+    const GALLERY_SCENES = [
+      {
+        tab: '🏡 Màn hình chờ 2.5D',
+        title: 'Màn hình chờ 2.5D hội tụ đủ 13 nhân vật',
+        desc: 'Khung cảnh ngoại thất ROO CAFE có chiều sâu với mây trôi, cây lay động, ống khói hương cà phê và 13 nhân vật toàn thân tương tác.',
+        svg: `<svg viewBox="0 0 960 540" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#79C7EA"/><stop offset="65%" stop-color="#BEE7F7"/><stop offset="100%" stop-color="#FCE6BD"/></linearGradient><linearGradient id="g1l" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8FD07F"/><stop offset="100%" stop-color="#5BA153"/></linearGradient></defs><rect width="960" height="300" fill="url(#g1s)"/><path d="M0 245 Q240 200 480 230 T960 240 L960 540 L0 540 Z" fill="url(#g1l)"/><path d="M330 275 L630 275 L780 510 L180 510 Z" fill="#E8CEA6" stroke="#B79266" stroke-width="3"/><rect x="335" y="175" width="290" height="110" rx="12" fill="#FFF8EC" stroke="#4A3528" stroke-width="3"/><path d="M312 182 L362 115 H598 L648 182 Z" fill="#C96B4B" stroke="#4A3328" stroke-width="3.2"/><rect x="404" y="130" width="152" height="36" rx="11" fill="#46352C" stroke="#F6D79A" stroke-width="2.8"/><text x="480" y="154" text-anchor="middle" fill="#FFE6A3" font-size="18" font-weight="800" font-family="Plus Jakarta Sans">ROO CAFE</text><rect x="355" y="218" width="84" height="48" rx="9" fill="#FAD382" stroke="#4A3528" stroke-width="2.5"/><rect x="521" y="218" width="84" height="48" rx="9" fill="#FAD382" stroke="#4A3528" stroke-width="2.5"/><path d="M454 285 V236 A26 22 0 0 1 506 236 V285 Z" fill="#8C5F42" stroke="#3E2A20" stroke-width="2.5"/><rect x="330" y="24" width="300" height="58" rx="26" fill="#463329" stroke="#FBE5B8" stroke-width="3.5"/><text x="424" y="64" text-anchor="middle" fill="#FFE8A8" font-size="38" font-weight="800" font-family="Plus Jakarta Sans">Roo</text><text x="530" y="64" text-anchor="middle" fill="#8FD4A4" font-size="38" font-weight="800" font-family="Plus Jakarta Sans">Cozy</text><rect x="320" y="468" width="320" height="46" rx="16" fill="#F0B954" stroke="#FFF8DF" stroke-width="3"/><text x="480" y="497" text-anchor="middle" fill="#4A2E14" font-size="18" font-weight="800" font-family="Plus Jakarta Sans">✨ CHẠM ĐỂ CHƠI!</text></svg>`
+      },
+      {
+        tab: '☕ Trong Quán & Thiết Bị',
+        title: 'Quầy Barista nâng cấp Lv.3 & 4 Bàn Trong Quán',
+        desc: 'Máy Espresso Hoàng Gia, Máy Xay Hạt Ý và Tủ Bánh 2 Tầng Paris nâng trực tiếp trên quầy; khách nhân hóa 2 chân ngồi thưởng thức và gọi thêm Combo.',
+        svg: `<svg viewBox="0 0 960 540" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg"><rect width="960" height="365" fill="#F6F1E7"/><rect y="365" width="960" height="175" fill="#DFC7A8"/><rect x="290" y="42" width="380" height="225" rx="24" fill="#C9A882" stroke="#4D3E35" stroke-width="3.5"/><rect x="302" y="54" width="356" height="201" rx="18" fill="#CBE4F5"/><path d="M302 222 Q410 185 520 212 T658 205 L658 255 L302 255 Z" fill="#92B397"/><g transform="translate(36, 325)"><rect x="0" y="16" width="250" height="122" rx="14" fill="#CFAF8B" stroke="#4D3E35" stroke-width="3"/><rect x="-6" y="0" width="262" height="22" rx="8" fill="#EFE4D4" stroke="#4D3E35" stroke-width="3"/><rect x="14" y="-54" width="62" height="54" rx="10" fill="#4E6E5D" stroke="#362B25" stroke-width="2.5"/><rect x="18" y="-49" width="54" height="13" rx="4" fill="#F6D585"/><rect x="188" y="-44" width="54" height="44" rx="9" fill="#FFFDF9" fill-opacity="0.72" stroke="#4D3E35" stroke-width="2.2"/><rect x="74" y="48" width="102" height="42" rx="9" fill="#FFFDF9" stroke="#4D3E35" stroke-width="2.2"/><text x="125" y="73" text-anchor="middle" fill="#2E2723" font-size="13" font-weight="800">RooCozy</text></g><g transform="translate(432, 270) scale(0.84)"><rect x="22" y="54" width="66" height="50" rx="14" fill="#C8BCD8" stroke="#4D3E35" stroke-width="2.5"/><ellipse cx="130" cy="88" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/></g><g transform="translate(340, 365)"><rect x="22" y="54" width="66" height="50" rx="14" fill="#D4B595" stroke="#4D3E35" stroke-width="2.5"/><ellipse cx="130" cy="88" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/></g><g transform="translate(548, 372)"><rect x="22" y="54" width="66" height="50" rx="14" fill="#B6CEBF" stroke="#4D3E35" stroke-width="2.5"/><ellipse cx="130" cy="88" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/><rect x="-12" y="-12" width="166" height="38" rx="16" fill="#FFFDF0" stroke="#F0D89E" stroke-width="2.5"/><text x="71" y="12" text-anchor="middle" fill="#8A611C" font-size="11.5" font-weight="800">🍰 Bé Bò · Gọi thêm Combo!</text></g><g transform="translate(744, 378)"><rect x="22" y="54" width="66" height="50" rx="14" fill="#E2BFA9" stroke="#4D3E35" stroke-width="2.5"/><ellipse cx="130" cy="88" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/></g></svg>`
+      },
+      {
+        tab: '🌿 Sân Vườn ROO (v1.6)',
+        title: 'Khu Sân Vườn Ngoài Trời, Chòi Hoa & Hồ Cá Koi VIP',
+        desc: 'Chuyển khu Trong Quán ↔ Sân Vườn với mái hiên Take-away, 3 bàn dù ngoài trời, giàn hoa leo Pergola và hồ cá Koi pastel cộng +15% 🫘.',
+        svg: `<svg viewBox="0 0 960 540" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g3s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8A7BA8"/><stop offset="55%" stop-color="#E69E8E"/><stop offset="100%" stop-color="#FBE1B2"/></linearGradient></defs><rect width="960" height="320" fill="url(#g3s)"/><circle cx="805" cy="94" r="34" fill="#FFF2B8" opacity="0.9"/><path d="M0 282 Q260 232 520 268 T960 256 L960 360 L0 360 Z" fill="#8F7080"/><rect y="352" width="960" height="188" fill="#DFCBB0"/><rect y="352" width="960" height="14" fill="#8CC084"/><rect x="20" y="156" width="248" height="304" rx="16" fill="#FFF7EA" stroke="#4D3E35" stroke-width="3"/><rect x="52" y="232" width="184" height="106" rx="12" fill="#5D4B43" stroke="#4D3E35" stroke-width="3"/><path d="M14 162 H274 L286 208 H6 Z" fill="#4E6E5D" stroke="#3B312B" stroke-width="2.5"/><rect x="66" y="388" width="156" height="44" rx="10" fill="#FFFDF9" stroke="#4D3E35" stroke-width="2.4"/><text x="144" y="415" text-anchor="middle" fill="#4E6E5D" font-size="13" font-weight="800">ROO GARDEN</text><ellipse cx="816" cy="496" rx="92" ry="24" fill="#A6D4E5" stroke="#5C899C" stroke-width="3"/><ellipse cx="792" cy="494" rx="10" ry="4" fill="#F29457"/><rect x="728" y="238" width="214" height="16" rx="6" fill="#B58B63" stroke="#4D3E35" stroke-width="2.5"/><g transform="translate(335, 340)"><path d="M60 12 Q122 -36 184 12 Z" fill="#F29E84" stroke="#4D3E35" stroke-width="2.5"/><rect x="119" y="12" width="6" height="104" fill="#8C6244"/><ellipse cx="122" cy="96" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/></g><g transform="translate(545, 348)"><path d="M60 12 Q122 -36 184 12 Z" fill="#77A78B" stroke="#4D3E35" stroke-width="2.5"/><rect x="119" y="12" width="6" height="104" fill="#8C6244"/><ellipse cx="122" cy="96" rx="34" ry="12" fill="#EFE4D4" stroke="#4D3E35" stroke-width="2.5"/></g><rect x="24" y="24" width="234" height="40" rx="16" fill="#FFFDF9" stroke="#E6E1D6" stroke-width="2"/><rect x="136" y="29" width="116" height="30" rx="12" fill="#4E6E5D"/><text x="80" y="49" text-anchor="middle" fill="#7A7168" font-size="12" font-weight="700">🏠 Trong Quán</text><text x="194" y="49" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700">🌿 Sân Vườn</text></svg>`
+      },
+      {
+        tab: '🎵 Jukebox & Pomodoro',
+        title: 'ROO Jukebox (Jazz + MP3 cá nhân) & Học cùng Pomodoro',
+        desc: '3 ngăn kéo trượt gọn gàng bên phải sân khấu: đồng hồ Pomodoro, máy phát ROO Jukebox nạp nhạc từ thiết bị và Giấy Nhớ To-Do nhận +15 🫘.',
+        svg: `<svg viewBox="0 0 960 540" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg"><rect width="960" height="540" fill="#F7F6F2"/><rect x="52" y="44" width="420" height="452" rx="30" fill="#FFFFFF" stroke="#E8E6DF" stroke-width="3"/><text x="86" y="92" fill="#1E2421" font-size="22" font-weight="800" font-family="Plus Jakarta Sans">🎵 ROO Jukebox</text><rect x="330" y="66" width="114" height="32" rx="12" fill="#F2EAE1" stroke="#E4D5C5" stroke-width="2"/><text x="387" y="87" text-anchor="middle" fill="#6B4F35" font-size="12" font-weight="800">+ Thêm MP3</text><rect x="82" y="116" width="360" height="136" rx="22" fill="#F7F6F2" stroke="#E8E6DF" stroke-width="2"/><text x="108" y="156" fill="#1E2421" font-size="19" font-weight="800">🍂 Automne chez Roo</text><text x="108" y="180" fill="#4E6E5D" font-size="13" font-weight="700">RooCozy Trio · Cafe Jazz · 74 BPM</text><rect x="108" y="202" width="308" height="8" rx="4" fill="#E8E6DF"/><rect x="108" y="202" width="186" height="8" rx="4" fill="#4E6E5D"/><rect x="504" y="44" width="404" height="236" rx="30" fill="#FFFFFF" stroke="#E8E6DF" stroke-width="3"/><text x="536" y="90" fill="#1E2421" font-size="20" font-weight="800">⏱️ Góc Tập Trung Pomodoro</text><text x="706" y="168" text-anchor="middle" fill="#1E2421" font-size="56" font-weight="800" font-family="JetBrains Mono">24:59</text><rect x="546" y="198" width="320" height="44" rx="16" fill="#4E6E5D"/><text x="706" y="226" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="800">📚 Roo đang đeo kính học cùng bạn</text><rect x="504" y="302" width="404" height="194" rx="30" fill="#FFFFFF" stroke="#E8E6DF" stroke-width="3"/><text x="536" y="346" fill="#1E2421" font-size="19" font-weight="800">📝 Giấy Nhớ Hôm Nay (+15 🫘)</text><rect x="536" y="368" width="340" height="42" rx="12" fill="#E5EFE9"/><text x="556" y="394" fill="#2F5241" font-size="13" font-weight="700">☑ Hoàn thành 1 phiên tập trung 25 phút</text></svg>`
+      },
+      {
+        tab: '📊 Sổ Doanh Thu',
+        title: 'Trung tâm Quản Lý 3 Tab: Thiết Bị · Mở Rộng · Doanh Thu',
+        desc: 'Theo dõi doanh thu hằng ngày, số ly bán, món Best Seller, tổng tiền Tip và biểu đồ cột 7 ngày ngay trong tiệm.',
+        svg: `<svg viewBox="0 0 960 540" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg"><rect width="960" height="540" fill="#F7F6F2"/><rect x="56" y="34" width="848" height="472" rx="32" fill="#FFFFFF" stroke="#E8E6DF" stroke-width="3"/><text x="92" y="84" fill="#1E2421" font-size="24" font-weight="800" font-family="Plus Jakarta Sans">📊 Quản Lý Tiệm RooCozy</text><rect x="92" y="106" width="248" height="40" rx="14" fill="#F7F6F2" stroke="#E8E6DF" stroke-width="2"/><text x="216" y="131" text-anchor="middle" fill="#6C736E" font-size="13" font-weight="700">⚙️ Thiết Bị</text><rect x="356" y="106" width="248" height="40" rx="14" fill="#F7F6F2" stroke="#E8E6DF" stroke-width="2"/><text x="480" y="131" text-anchor="middle" fill="#6C736E" font-size="13" font-weight="700">🏡 Mở Rộng Quán</text><rect x="620" y="106" width="248" height="40" rx="14" fill="#4E6E5D"/><text x="744" y="131" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">📒 Doanh Thu</text><rect x="92" y="166" width="182" height="86" rx="18" fill="#F2EAE1"/><text x="112" y="232" fill="#1E2421" font-size="24" font-weight="800" font-family="JetBrains Mono">485 🫘</text><rect x="290" y="166" width="182" height="86" rx="18" fill="#E5EFE9"/><text x="310" y="232" fill="#1E2421" font-size="24" font-weight="800" font-family="JetBrains Mono">18 ly</text><rect x="488" y="166" width="182" height="86" rx="18" fill="#EBE6F2"/><text x="508" y="232" fill="#1E2421" font-size="22" font-weight="800" font-family="JetBrains Mono">7✨ · 5🍰</text><rect x="686" y="166" width="182" height="86" rx="18" fill="#E3EAF0"/><text x="706" y="230" fill="#1E2421" font-size="15" font-weight="800">🥛 Bạc Xỉu</text><rect x="92" y="274" width="776" height="202" rx="22" fill="#F7F6F2" stroke="#E8E6DF" stroke-width="2"/><rect x="150" y="388" width="54" height="58" rx="12" fill="#CFE0D6"/><rect x="254" y="364" width="54" height="82" rx="12" fill="#CFE0D6"/><rect x="358" y="378" width="54" height="68" rx="12" fill="#CFE0D6"/><rect x="462" y="346" width="54" height="100" rx="12" fill="#CFE0D6"/><rect x="566" y="356" width="54" height="90" rx="12" fill="#CFE0D6"/><rect x="670" y="336" width="54" height="110" rx="12" fill="#CFE0D6"/><rect x="774" y="320" width="54" height="126" rx="12" fill="#4E6E5D"/></svg>`
+      }
+    ];
+
+    function renderGallery(idx = 0) {
+      const item = GALLERY_SCENES[idx] || GALLERY_SCENES[0];
+      document.getElementById('gallery-stage').innerHTML = item.svg;
+      document.getElementById('gallery-title').textContent = item.title;
+      document.getElementById('gallery-desc').textContent = item.desc;
+      document.getElementById('gallery-tabs').innerHTML = GALLERY_SCENES.map((s, i) => `
+        <button type="button" onclick="renderGallery(${i})" class="tactile px-3 py-1.5 rounded-xl text-[11px] font-semibold border ${i === idx ? 'bg-sage text-white border-sage shadow-soft' : 'bg-canvas text-muted border-hairline hover:bg-surface'}">${s.tab}</button>
+      `).join('');
+    }
+
+    function setShowcaseMode(mode) {
+      const isVideo = mode === 'video';
+      document.getElementById('showcase-gallery-panel').classList.toggle('hidden', isVideo);
+      document.getElementById('showcase-video-panel').classList.toggle('hidden', !isVideo);
+      document.getElementById('mode-btn-gallery').className = !isVideo ? 'tactile px-4 py-2 rounded-xl text-xs font-semibold bg-sage text-white shadow-soft' : 'tactile px-4 py-2 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted hover:text-ink';
+      document.getElementById('mode-btn-video').className = isVideo ? 'tactile px-4 py-2 rounded-xl text-xs font-semibold bg-sage text-white shadow-soft' : 'tactile px-4 py-2 rounded-xl text-xs font-semibold bg-surface border border-hairline text-muted hover:text-ink';
+      if (isVideo) renderVideoStage();
+    }
+
+    function renderVideoStage() {
+      const box = document.getElementById('video-stage-box');
+      const yt = (rooConfig.rooVideoUrl || '').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+      if (yt) {
+        box.innerHTML = `<iframe src="https://www.youtube.com/embed/${yt[1]}" class="w-full h-full border-0" allowfullscreen></iframe>`;
+        return;
+      }
+      box.innerHTML = `
+        <div class="space-y-4 max-w-md">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-sage-soft/20 border border-sage-border/30 text-2xl flex items-center justify-center">🎬</div>
+          <h3 class="font-display text-lg font-bold text-white">Chưa gắn link Video Trailer</h3>
+          <p class="text-xs text-[#CFE0D6] leading-relaxed">Bạn có thể bấm chơi thử trực tiếp bản live <strong>RooCozy v1.7.2</strong> ngay trong khung này hoặc mở toàn màn hình!</p>
+          <div class="flex flex-wrap items-center justify-center gap-2.5">
+            <button type="button" onclick="loadLiveIframePreview()" class="tactile px-4 py-2.5 rounded-xl bg-sage hover:bg-sage-hover text-white text-xs font-semibold shadow-soft">Chơi thử trong khung</button>
+            <button type="button" onclick="handleRooAction('web')" class="tactile px-4 py-2.5 rounded-xl bg-surface text-ink text-xs font-semibold">Mở toàn màn hình ↗</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadLiveIframePreview() {
+      const box = document.getElementById('video-stage-box');
+      box.innerHTML = `<iframe src="${rooConfig.rooWebUrl || 'roocozy.html'}" class="w-full h-full border-0 bg-[#F4F1EA]" title="RooCozy v1.7.2 Live Preview"></iframe>`;
+    }
+
+    const CAST_LIST = [
+      { emoji: '🐶', name: 'Bé Chó Roo', group: 'special', tag: 'Chủ Quán', cls: 'bg-sage-soft text-sage-text', desc: 'Chủ tiệm chó đen mập mạp, mặt vàng, đeo tạp dề. Chạm xoa đầu để Roo cười tít mắt (^ ◡ ^).' },
+      { emoji: '🐮', name: 'Bé Bò Sữa', group: 'special', tag: 'Đặc Biệt 💝', cls: 'bg-sand-soft text-sand-text', desc: 'Vị khách đặc biệt nhất tiệm, mặc váy yếm dâu tây, tặng Bình Sữa Dâu (+24 ✨).' },
+      { emoji: '🐱', name: 'Mèo Mochi Trắng', group: 'common', tag: 'Thường', cls: 'bg-canvas text-muted', desc: 'Sinh viên chăm chỉ mặc cardigan xanh, hay ngồi học cùng Pomodoro.' },
+      { emoji: '🐰', name: 'Thỏ Yến Mạch', group: 'common', tag: 'Thường', cls: 'bg-canvas text-muted', desc: 'Họa sĩ phác thảo đội mũ beret, thích ánh nắng nhẹ buổi sáng.' },
+      { emoji: '🐻', name: 'Gấu Nâu Latte', group: 'common', tag: 'Thường', cls: 'bg-canvas text-muted', desc: 'Nhà thiết kế mặc áo len cổ lọ, yêu thích Cà Phê Sữa Đá.' },
+      { emoji: '🐸', name: 'Ếch Xanh Matcha', group: 'common', tag: 'Thường', cls: 'bg-canvas text-muted', desc: 'Mọt sách điềm tĩnh, thích ngồi ngắm mưa rơi và uống Matcha Latte.' },
+      { emoji: '🍊', name: 'Capybara Đội Quýt', group: 'rare', tag: 'Hiếm', cls: 'bg-slatep-soft text-slatep-text', desc: 'Bậc thầy thư giãn mặc áo khoác Haori xanh, hay ghé chiều Hoàng hôn.' },
+      { emoji: '🐕', name: 'Cún Shiba Bánh Mì', group: 'rare', tag: 'Hiếm', cls: 'bg-slatep-soft text-slatep-text', desc: 'Nhạc sĩ Lo-fi đeo tai nghe, thưởng thêm Tip khi ROO Jukebox đang bật.' },
+      { emoji: '🦉', name: 'Cú Đêm Đọc Sách', group: 'rare', tag: 'Hiếm', cls: 'bg-slatep-soft text-slatep-text', desc: 'Triết gia cú đêm mặc áo gile tweed, thích Cacao nóng vào Đêm sao.' },
+      { emoji: '🫘', name: 'Bé Đậu Đen', group: 'rare', tag: 'Cameo Studio', cls: 'bg-lavender-soft text-lavender-text', desc: 'Đại sứ từ BlackBean Studio, tặng Huy Hiệu Hạt Đậu Đen (+12 ✨).' },
+      { emoji: '🛡️', name: 'Phốc Cam COWSAP', group: 'rare', tag: 'Cameo COWSAP', cls: 'bg-lavender-soft text-lavender-text', desc: 'Vệ sĩ két mật khẩu từ COWSAP v1.5, cực mê bánh Tiramisu!' },
+      { emoji: '🪙', name: 'Mèo Thần Tài Vàng', group: 'legendary', tag: 'Huyền Thoại', cls: 'bg-sand-soft text-sand-text', desc: 'Khách quý mặc áo Happi đỏ mang may mắn, thưởng x3.5 Hạt Đậu Vàng.' },
+      { emoji: '☁️', name: 'Rồng Mây Pastel', group: 'legendary', tag: 'Huyền Thoại', cls: 'bg-sand-soft text-sand-text', desc: 'Thần thú bầu trời đêm hạ cánh khi tiệm lung linh ánh đèn sao.' }
+    ];
+
+    function renderCast(filter = 'all') {
+      document.querySelectorAll('.cf-btn').forEach(btn => {
+        const active = btn.getAttribute('data-cf') === filter;
+        btn.className = `cf-btn tactile px-3 py-1.5 rounded-xl text-xs font-semibold ${active ? 'bg-sage text-white shadow-soft' : 'bg-surface border border-hairline text-muted hover:text-ink'}`;
+      });
+      const list = filter === 'all' ? CAST_LIST : CAST_LIST.filter(c => c.group === filter);
+      document.getElementById('cast-grid').innerHTML = list.map(c => `
+        <div class="bg-surface border border-hairline rounded-2xl p-4 shadow-soft space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-2xl leading-none">${c.emoji}</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${c.cls}">${c.tag}</span>
+          </div>
+          <h3 class="font-display font-bold text-sm text-ink">${c.name}</h3>
+          <p class="text-xs text-muted leading-relaxed">${c.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    function showToast(message, type = 'success', duration = 3000) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const styles = {
+        success: { bg: 'bg-surface border-sage-border', icon: 'check-circle-2', color: 'text-sage' },
+        info:    { bg: 'bg-surface border-hairline', icon: 'info', color: 'text-slatep-text' }
+      }[type] || { bg: 'bg-surface border-hairline', icon: 'info', color: 'text-ink' };
+      toast.className = `pointer-events-auto toast-enter flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-soft-md ${styles.bg}`;
+      toast.innerHTML = `<i data-lucide="${styles.icon}" class="w-4 h-4 ${styles.color} shrink-0"></i><span class="text-xs sm:text-sm font-medium text-ink leading-snug">${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 240);
+      }, duration);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadRooConfig();
+      renderGallery(0);
+      renderCast('all');
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
