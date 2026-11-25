@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="RooCozy" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#F7F6F2" />
-  <title>RooCozy v1.7.2 — Cozy Cafe & Focus Space | BlackBean Studio</title>
+  <title>RooCozy v1.8.1 — Cozy Cafe & Focus Space | BlackBean Studio</title>
 
   <!-- Chuẩn PWA & Favicon Bé Chó Roo -->
   <link rel="manifest" href="manifest.json" />
@@ -247,6 +247,18 @@
     .anim-guest-sit { transform-box: fill-box; transform-origin: bottom center; animation: guestSitDown 0.42s var(--spring) forwards; }
     .anim-guest-walk-in .leg-l, .anim-guest-walk-out .leg-l { transform-box: fill-box; transform-origin: top center; animation: walkLegL 0.28s ease-in-out infinite; }
     .anim-guest-walk-in .leg-r, .anim-guest-walk-out .leg-r { transform-box: fill-box; transform-origin: top center; animation: walkLegR 0.28s ease-in-out infinite; }
+    @keyframes gauZoomOut {
+      0%   { opacity: 1; transform: translate(0px, 0px) scale(1); }
+      35%  { opacity: 1; transform: translate(26px, -7px) scale(1.02); }
+      100% { opacity: 0; transform: translate(110px, -4px) scale(0.92); }
+    }
+    @keyframes gauZoomIn {
+      0%   { opacity: 0; transform: translate(105px, -4px) scale(0.92); }
+      65%  { opacity: 1; transform: translate(-4px, -6px) scale(1.03); }
+      100% { opacity: 1; transform: translate(0px, 0px) scale(1); }
+    }
+    .anim-gau-out { animation: gauZoomOut 0.65s ease-in forwards; }
+    .anim-gau-in  { animation: gauZoomIn 0.72s var(--spring) forwards; }
     .anim-legendary { animation: legendaryShimmer 2.4s ease-in-out infinite; }
     .float-particle { animation: floatUpFade 1.25s var(--spring) forwards; pointer-events: none; }
 
@@ -256,9 +268,23 @@
     .modal-panel { transform: scale(0.95) translateY(12px); opacity: 0; transition: transform 0.26s var(--spring), opacity 0.2s ease; }
     .modal-backdrop.open .modal-panel { transform: scale(1) translateY(0); opacity: 1; }
 
-    /* Zen Mode */
+    /* Zen Mode & Pause Freeze */
     body.zen-mode .zen-hide { opacity: 0; pointer-events: none; transform: translateY(8px); }
     .zen-transition { transition: opacity 0.35s ease, transform 0.35s var(--spring); }
+    body.game-paused #cafe-svg *,
+    body.game-paused #bubbles-layer * {
+      animation-play-state: paused !important;
+    }
+    @keyframes cozyDriftA {
+      0%, 100% { transform: translateY(0px) rotate(-3deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
+    }
+    @keyframes cozyDriftB {
+      0%, 100% { transform: translateY(0px) rotate(3deg); }
+      50% { transform: translateY(-8px) rotate(-2deg); }
+    }
+    .anim-drift-a { animation: cozyDriftA 4.6s ease-in-out infinite; }
+    .anim-drift-b { animation: cozyDriftB 5.2s ease-in-out 0.6s infinite; }
 
     /* Title Screen Transition */
     #title-screen {
@@ -348,406 +374,133 @@
 <body class="font-sans min-h-screen flex flex-col">
 
   <!-- ========================================================
-       0. MÀN HÌNH CHỜ THẾ GIỚI ROOCOZY 2.5D (FULL-CAST TITLE SCREEN)
+       0. MÀN HÌNH CHỜ PASTEL TỐI GIẢN ROOCOZY (TÊN GAME + CÀ PHÊ & BÁNH)
        ======================================================== -->
-  <section id="title-screen" class="fixed inset-0 z-[80] bg-gradient-to-b from-[#8ED0EC] via-[#C9E9D2] to-[#5B8754] flex flex-col items-center justify-center p-2 sm:p-3 overflow-hidden">
+  <section id="title-screen" class="fixed inset-0 z-[80] bg-gradient-to-br from-[#FCF8F1] via-[#F5EFE3] to-[#E7F0EA] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden">
 
-    <!-- Khung Thế Giới Game Cố Định Tỷ Lệ 16:9.5 — Đảm Bảo Hiển Thị Toàn Thân 13 Nhân Vật Ở Mọi Độ Phân Giải -->
-    <div id="title-world-frame" class="relative w-full h-full max-w-[1380px] max-h-[820px] flex items-center justify-center">
-      <div class="relative w-full aspect-[1280/760] max-h-full rounded-[1.8rem] sm:rounded-[2.4rem] overflow-hidden border-[3px] border-[#F6E6CC] shadow-cozy-lg bg-[#9ED8EE]">
+    <div id="title-world-frame" class="relative w-full h-full max-w-[1060px] max-h-[720px] flex items-center justify-center">
+      <div class="relative w-full h-full rounded-[2rem] sm:rounded-[2.6rem] overflow-hidden border-2 border-[#E8E0D0] shadow-cozy-lg bg-[#FCF9F3] flex flex-col items-center justify-between p-5 sm:p-8">
 
-        <!-- Thanh nhỏ góc trên (BlackBean Studio & Nhạc Cafe Jazz) -->
-        <div class="absolute top-2.5 sm:top-3.5 left-3 sm:left-4 right-3 sm:right-4 z-20 flex items-center justify-between gap-2 pointer-events-none">
-          <div class="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFFDF8]/90 backdrop-blur-md border border-[#E5D3B3] shadow-cozy text-[10px] sm:text-xs font-bold text-[#5C4432]">
+        <!-- Nền pastel siêu êm dịu (3 quầng sáng ấm áp nhẹ nhàng, không rối mắt) -->
+        <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div class="absolute -top-24 -left-20 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[#FCE9DC]/60 blur-3xl"></div>
+          <div class="absolute -bottom-24 -right-16 w-80 h-80 sm:w-[26rem] sm:h-[26rem] rounded-full bg-[#DCECE2]/65 blur-3xl"></div>
+          <div class="absolute top-1/3 right-1/4 w-56 h-56 rounded-full bg-[#FDF3D8]/55 blur-3xl"></div>
+        </div>
+
+        <!-- Thanh nhỏ góc trên -->
+        <div class="relative z-20 w-full flex items-center justify-between gap-2">
+          <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-paper/90 border border-[#E6DDD0] shadow-cozy text-[11px] sm:text-xs font-bold text-[#5A483A]">
             <span>☕</span>
             <span>BlackBean Studio</span>
-            <span class="hidden sm:inline text-[#8D7B6C]">· v1.7.2</span>
+            <span class="hidden sm:inline text-[#8D7F72]">· v1.8.1</span>
           </div>
 
           <button type="button" onclick="toggleMasterAudio()" id="title-music-btn"
-            class="pointer-events-auto tactile px-3 py-1.5 rounded-full bg-[#FFFDF8]/92 hover:bg-[#FFF6E5] backdrop-blur-md border border-[#E5D3B3] shadow-cozy text-[10px] sm:text-xs font-bold text-[#4A3828] flex items-center gap-1.5">
+            class="tactile px-3.5 py-1.5 rounded-full bg-paper/90 hover:bg-[#FFF8EB] border border-[#E6DDD0] shadow-cozy text-[11px] sm:text-xs font-bold text-[#4A3828] flex items-center gap-1.5">
             <span>🎷</span>
             <span id="title-music-label">Bật Jukebox</span>
           </button>
         </div>
 
-        <!-- BỨC TRANH THẾ GIỚI TIỆM CÀ PHÊ ROOCOZY (1280×760) -->
-        <svg id="title-scene-svg" viewBox="0 0 1280 760" preserveAspectRatio="xMidYMid meet" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <!-- Bầu trời sáng trong rạng rỡ kiểu game hoạt hình ấm áp -->
-            <linearGradient id="ts-sky" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#79C7EA"/>
-              <stop offset="52%" stop-color="#BEE7F7"/>
-              <stop offset="86%" stop-color="#F7F1D5"/>
-              <stop offset="100%" stop-color="#FCE6BD"/>
-            </linearGradient>
-            <!-- Ánh nắng vàng ấm góc trái -->
-            <radialGradient id="ts-sun-glow" cx="18%" cy="16%" r="48%">
-              <stop offset="0%" stop-color="#FFF7C8" stop-opacity="0.95"/>
-              <stop offset="42%" stop-color="#FFE69E" stop-opacity="0.45"/>
-              <stop offset="100%" stop-color="#FFE69E" stop-opacity="0"/>
-            </radialGradient>
-            <!-- Đồi cỏ xanh tươi sáng có chiều sâu -->
-            <linearGradient id="ts-hill-far" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#9BD39A"/>
-              <stop offset="100%" stop-color="#74B577"/>
-            </linearGradient>
-            <linearGradient id="ts-lawn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#8FD07F"/>
-              <stop offset="48%" stop-color="#76BC69"/>
-              <stop offset="100%" stop-color="#5BA153"/>
-            </linearGradient>
-            <!-- Con đường lát đá uốn lượn dẫn vào tiệm ROO CAFE -->
-            <linearGradient id="ts-path" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F2DFC0"/>
-              <stop offset="55%" stop-color="#E5CAA0"/>
-              <stop offset="100%" stop-color="#D4B284"/>
-            </linearGradient>
-            <!-- Mái ngói tiệm ROO CAFE -->
-            <linearGradient id="ts-roof" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#D97B59"/>
-              <stop offset="100%" stop-color="#B55B3D"/>
-            </linearGradient>
-            <!-- Tường kem ấm của quán -->
-            <linearGradient id="ts-cafe-wall" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#FFF8EC"/>
-              <stop offset="100%" stop-color="#F2E2C9"/>
-            </linearGradient>
-            <!-- Ánh đèn ấm tỏa ra từ cửa kính quán -->
-            <radialGradient id="ts-win-warm" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#FFF6C4"/>
-              <stop offset="65%" stop-color="#FAD382"/>
-              <stop offset="100%" stop-color="#E5A956"/>
-            </radialGradient>
-            <!-- Logo chữ ROOCOZY nổi bật -->
-            <linearGradient id="ts-logo-grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#FFFDF5"/>
-              <stop offset="55%" stop-color="#FFE8A8"/>
-              <stop offset="100%" stop-color="#F5BD65"/>
-            </linearGradient>
-            <linearGradient id="ts-logo-cozy" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#D9F5E3"/>
-              <stop offset="55%" stop-color="#8FD4A4"/>
-              <stop offset="100%" stop-color="#539D6F"/>
-            </linearGradient>
-            <filter id="ts-soft-shadow" x="-15%" y="-15%" width="130%" height="140%">
-              <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#2D221A" flood-opacity="0.22"/>
-            </filter>
-          </defs>
+        <!-- TRUNG TÂM: TÊN GAME ROOCOZY NHẸ NHÀNG + VÀI MÓN CÀ PHÊ & BÁNH NGỌT PASTEL -->
+        <div class="relative z-10 flex-1 w-full flex flex-col items-center justify-center min-h-0 py-2">
+          <div class="relative w-full max-w-[680px] flex flex-col items-center justify-center px-4 py-8 sm:py-12">
 
-          <!-- ========= TẦNG 1: BẦU TRỜI, MẶT TRỜI & MÂY TRÔI ========= -->
-          <rect x="0" y="0" width="1280" height="410" fill="url(#ts-sky)"/>
-          <rect x="0" y="0" width="1280" height="410" fill="url(#ts-sun-glow)"/>
-          <!-- Tia nắng chéo dịu nhẹ -->
-          <polygon points="80,0 260,0 520,390 290,390" fill="#FFF9D6" opacity="0.22"/>
-          <polygon points="310,0 440,0 690,390 560,390" fill="#FFF9D6" opacity="0.16"/>
+            <!-- Món 1 (Góc trên trái): Tách Latte nóng bốc khói pastel -->
+            <div class="anim-drift-a pointer-events-none absolute -top-2 left-3 sm:left-8 w-16 h-16 sm:w-20 sm:h-20 opacity-95" aria-hidden="true">
+              <svg viewBox="0 0 96 96" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+                <path d="M36 22 Q40 15 36 10" fill="none" stroke="#C8B6A2" stroke-width="2.6" stroke-linecap="round" class="anim-steam"/>
+                <path d="M50 20 Q54 13 50 8" fill="none" stroke="#C8B6A2" stroke-width="2.6" stroke-linecap="round" class="anim-steam" style="animation-delay:0.8s"/>
+                <ellipse cx="46" cy="74" rx="28" ry="7.5" fill="#E6EFEA" stroke="#6B5A4E" stroke-width="2.4"/>
+                <path d="M24 38 H66 V54 C66 66 57 73 45 73 C33 73 24 66 24 54 Z" fill="#FFFDF9" stroke="#6B5A4E" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M66 43 C75 43 76 58 65 59" fill="none" stroke="#6B5A4E" stroke-width="2.6" stroke-linecap="round"/>
+                <ellipse cx="45" cy="38" rx="21" ry="6.5" fill="#D2A072" stroke="#6B5A4E" stroke-width="2.4"/>
+                <path d="M45 36.5 C45 34.5 41.5 34.5 41.5 36.5 C41.5 38.5 45 40.5 45 40.5 C45 40.5 48.5 38.5 48.5 36.5 C48.5 34.5 45 34.5 45 36.5 Z" fill="#FFF8EE"/>
+              </svg>
+            </div>
 
-          <!-- Mây trắng bồng bềnh trôi chậm -->
-          <g class="anim-cloud" opacity="0.92">
-            <g fill="#FFFFFF">
-              <ellipse cx="170" cy="110" rx="68" ry="26"/>
-              <ellipse cx="212" cy="96" rx="46" ry="26"/>
-              <ellipse cx="130" cy="106" rx="38" ry="21"/>
-            </g>
-            <g fill="#FFFFFF" opacity="0.9">
-              <ellipse cx="1065" cy="108" rx="74" ry="27"/>
-              <ellipse cx="1108" cy="92" rx="48" ry="26"/>
-              <ellipse cx="1015" cy="105" rx="40" ry="21"/>
-            </g>
-            <g fill="#FFFFFF" opacity="0.78">
-              <ellipse cx="890" cy="166" rx="44" ry="17"/>
-              <ellipse cx="916" cy="156" rx="28" ry="15"/>
-            </g>
-          </g>
+            <!-- Món 2 (Góc trên phải): Bánh Croissant bơ Pháp vàng dịu -->
+            <div class="anim-drift-b pointer-events-none absolute -top-1 right-3 sm:right-8 w-16 h-16 sm:w-20 sm:h-20 opacity-95" aria-hidden="true">
+              <svg viewBox="0 0 96 96" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="48" cy="70" rx="28" ry="6" fill="#EDE4D5" opacity="0.7"/>
+                <path d="M18 60 C16 42 32 30 48 30 C64 30 80 42 78 60 C72 64 64 62 60 56 C54 60 42 60 36 56 C32 62 24 64 18 60 Z"
+                      fill="#F0BE7E" stroke="#6E4E37" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M34 35 C38 44 38 52 35 56 M62 35 C58 44 58 52 61 56 M48 31 V57"
+                      fill="none" stroke="#9B6E4A" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M41 37 Q48 34 55 37" fill="none" stroke="#FFF4DC" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+              </svg>
+            </div>
 
-          <!-- ========= TẦNG 2: ĐỒI XA, HÀNG CÂY & HÀNG RÀO SÂN VƯỜN ========= -->
-          <path d="M0 305 Q210 232 450 288 T920 278 T1280 296 L1280 410 L0 410 Z" fill="url(#ts-hill-far)"/>
-          <path d="M0 342 Q290 296 640 318 T1280 338 L1280 760 L0 760 Z" fill="url(#ts-lawn)"/>
+            <!-- Món 3 (Góc dưới trái): Miếng bánh kem dâu tây pastel -->
+            <div class="anim-drift-b pointer-events-none hidden sm:block absolute bottom-0 left-10 w-16 h-16 opacity-90" aria-hidden="true">
+              <svg viewBox="0 0 96 96" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="48" cy="75" rx="27" ry="6.5" fill="#FBECE7" stroke="#6B5A4E" stroke-width="2.2"/>
+                <path d="M24 47 L66 34 L72 68 L24 68 Z" fill="#FFF6DE" stroke="#6B5A4E" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M24 56 L70 52" stroke="#F4A3B0" stroke-width="4.5" stroke-linecap="round"/>
+                <path d="M22 47 L67 33 C69 37 66 42 61 42 C57 42 54 45 48 45 C42 45 38 48 32 48 C27 48 23 50 22 47 Z"
+                      fill="#FFFDF9" stroke="#6B5A4E" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M49 24 C44 24 41 29 44 35 C46 38 52 38 54 35 C57 29 54 24 49 24 Z" fill="#EB7D8C" stroke="#6B4046" stroke-width="2"/>
+                <path d="M46 24 Q49 20 52 24" fill="none" stroke="#5F8D6E" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </div>
 
-          <!-- Cây xanh tươi hai bên hậu cảnh -->
-          <g class="anim-leaf">
-            <!-- Cụm cây trái -->
-            <rect x="74" y="254" width="22" height="92" rx="8" fill="#8C6244" stroke="#4A3528" stroke-width="3"/>
-            <circle cx="85" cy="220" r="56" fill="#6BB36B" stroke="#3B613E" stroke-width="3.2"/>
-            <circle cx="52" cy="242" r="42" fill="#7BC477" stroke="#3B613E" stroke-width="3"/>
-            <circle cx="122" cy="238" r="40" fill="#5EA362" stroke="#3B613E" stroke-width="3"/>
-            <circle cx="68" cy="204" r="16" fill="#A5DE98" opacity="0.6"/>
-            <!-- Hoa nhỏ trên tán cây -->
-            <circle cx="56" cy="234" r="5" fill="#FFF3B8"/><circle cx="110" cy="222" r="5" fill="#FFD2D8"/>
-          </g>
-          <g class="anim-leaf" style="animation-delay:0.9s">
-            <!-- Cụm cây trái gần quán -->
-            <rect x="278" y="266" width="18" height="72" rx="6" fill="#8C6244" stroke="#4A3528" stroke-width="2.6"/>
-            <circle cx="288" cy="240" r="44" fill="#77BF72" stroke="#3B613E" stroke-width="3"/>
-            <circle cx="262" cy="256" r="30" fill="#8DD183" stroke="#3B613E" stroke-width="2.6"/>
-            <circle cx="316" cy="256" r="30" fill="#66AD66" stroke="#3B613E" stroke-width="2.6"/>
-          </g>
-          <g class="anim-leaf" style="animation-delay:0.5s">
-            <!-- Cụm cây hoa anh đào / tán pastel phải -->
-            <rect x="1162" y="248" width="24" height="98" rx="8" fill="#8C6244" stroke="#4A3528" stroke-width="3"/>
-            <circle cx="1174" cy="212" r="58" fill="#F2B4BE" stroke="#854E5A" stroke-width="3.2"/>
-            <circle cx="1132" cy="236" r="42" fill="#F8CBD2" stroke="#854E5A" stroke-width="3"/>
-            <circle cx="1216" cy="234" r="40" fill="#E69AA8" stroke="#854E5A" stroke-width="3"/>
-            <circle cx="1158" cy="194" r="17" fill="#FFE6EA" opacity="0.65"/>
-          </g>
-          <g class="anim-leaf" style="animation-delay:1.3s">
-            <!-- Cây xanh phải gần quán -->
-            <rect x="974" y="266" width="18" height="72" rx="6" fill="#8C6244" stroke="#4A3528" stroke-width="2.6"/>
-            <circle cx="984" cy="242" r="42" fill="#6FB870" stroke="#3B613E" stroke-width="3"/>
-            <circle cx="1012" cy="256" r="30" fill="#87CD82" stroke="#3B613E" stroke-width="2.6"/>
-            <circle cx="956" cy="258" r="28" fill="#5DA662" stroke="#3B613E" stroke-width="2.6"/>
-          </g>
+            <!-- Món 4 (Góc dưới phải): Ly trà sữa / cà phê đá pastel -->
+            <div class="anim-drift-a pointer-events-none hidden sm:block absolute bottom-0 right-10 w-16 h-16 opacity-90" aria-hidden="true">
+              <svg viewBox="0 0 96 96" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+                <line x1="56" y1="12" x2="50" y2="34" stroke="#5E856E" stroke-width="4" stroke-linecap="round"/>
+                <path d="M30 34 H66 L61 76 C60.5 79 58 81 55 81 H41 C38 81 35.5 79 35 76 Z"
+                      fill="#E4BC91" stroke="#6B5A4E" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M31.5 42 H64.5 L63.5 50 H32.5 Z" fill="#FFF9EE" opacity="0.88"/>
+                <path d="M28 34 C28 24 68 24 68 34 Z" fill="#FFFFFF" fill-opacity="0.72" stroke="#6B5A4E" stroke-width="2.3"/>
+                <circle cx="43" cy="72" r="3" fill="#5D4234"/><circle cx="51" cy="74" r="3" fill="#5D4234"/><circle cx="56" cy="69" r="2.8" fill="#5D4234"/>
+              </svg>
+            </div>
 
-          <!-- Hàng rào gỗ trắng ấm áp bên trái -->
-          <g fill="#FFF9EE" stroke="#6E5A49" stroke-width="2.6" stroke-linejoin="round">
-            <rect x="0" y="314" width="424" height="10" rx="3"/>
-            <rect x="0" y="340" width="424" height="10" rx="3"/>
-            <path d="M18 362 V302 L30 290 L42 302 V362 Z"/>
-            <path d="M62 362 V302 L74 290 L86 302 V362 Z"/>
-            <path d="M106 362 V302 L118 290 L130 302 V362 Z"/>
-            <path d="M150 362 V302 L162 290 L174 302 V362 Z"/>
-            <path d="M194 362 V302 L206 290 L218 302 V362 Z"/>
-            <path d="M238 362 V302 L250 290 L262 302 V362 Z"/>
-            <path d="M282 362 V302 L294 290 L306 302 V362 Z"/>
-            <path d="M326 362 V302 L338 290 L350 302 V362 Z"/>
-            <path d="M370 362 V302 L382 290 L394 302 V362 Z"/>
-          </g>
+            <!-- NHÃN PHỤ NHỎ NHẸ -->
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-sage-soft/85 border border-sage-border text-[10px] sm:text-[11px] font-bold tracking-[0.14em] uppercase text-sage-text mb-3">
+              <span>ROO · MY LITTLE CAFÉ</span>
+            </span>
 
-          <!-- Hàng rào sân vườn cổ điển bên phải -->
-          <g stroke="#54453B" stroke-width="2.8" fill="#FFF9EE" stroke-linejoin="round">
-            <rect x="856" y="314" width="424" height="10" rx="3"/>
-            <rect x="856" y="340" width="424" height="10" rx="3"/>
-            <path d="M886 362 V302 L898 290 L910 302 V362 Z"/>
-            <path d="M930 362 V302 L942 290 L954 302 V362 Z"/>
-            <path d="M974 362 V302 L986 290 L998 302 V362 Z"/>
-            <path d="M1018 362 V302 L1030 290 L1042 302 V362 Z"/>
-            <path d="M1062 362 V302 L1074 290 L1086 302 V362 Z"/>
-            <path d="M1106 362 V302 L1118 290 L1130 302 V362 Z"/>
-            <path d="M1150 362 V302 L1162 290 L1174 302 V362 Z"/>
-            <path d="M1194 362 V302 L1206 290 L1218 302 V362 Z"/>
-            <path d="M1238 362 V302 L1250 290 L1262 302 V362 Z"/>
-          </g>
+            <!-- TÊN GAME ROOCOZY SẠCH ĐẸP, NHẸ NHÀNG, PASTEL -->
+            <h1 class="font-display font-extrabold tracking-tight leading-none text-center select-none text-[3.4rem] sm:text-[5.2rem] md:text-[6rem] drop-shadow-[0_6px_18px_rgba(78,110,93,0.10)]">
+              <span class="text-[#5A4234]">Roo</span><span class="text-[#567E69]">Cozy</span>
+            </h1>
 
-          <!-- ========= TẦNG 3: CON ĐƯỜNG ĐÁ UỐN LƯỢN & SÂN VƯỜN ========= -->
-          <!-- Nền sân lát đá trước quán mở rộng theo phối cảnh 2.5D -->
-          <path d="M440 374 L840 374 C885 430, 995 520, 1085 690 L195 690 C285 520, 395 430, 440 374 Z"
-                fill="url(#ts-path)" stroke="#B79266" stroke-width="4"/>
-          <!-- Viền đá mềm hai bên đường -->
-          <path d="M440 374 C395 430, 285 520, 195 690" fill="none" stroke="#F8ECD4" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
-          <path d="M840 374 C885 430, 995 520, 1085 690" fill="none" stroke="#F8ECD4" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
-          <!-- Đá lát trang trí tạo chiều sâu trên sân -->
-          <g fill="#F6E9D2" opacity="0.55">
-            <ellipse cx="640" cy="422" rx="46" ry="10"/>
-            <ellipse cx="565" cy="462" rx="34" ry="8"/>
-            <ellipse cx="718" cy="466" rx="36" ry="8"/>
-            <ellipse cx="640" cy="512" rx="58" ry="12"/>
-            <ellipse cx="486" cy="566" rx="42" ry="10"/>
-            <ellipse cx="792" cy="570" rx="42" ry="10"/>
-            <ellipse cx="640" cy="605" rx="68" ry="13"/>
-          </g>
+            <!-- Đường phân cách mỏng có hạt cà phê nhỏ ở giữa -->
+            <div class="flex items-center gap-3 mt-4 mb-3">
+              <span class="w-10 sm:w-14 h-[1.5px] rounded-full bg-[#DFD5C3]"></span>
+              <span class="text-sm opacity-80">☕</span>
+              <span class="w-10 sm:w-14 h-[1.5px] rounded-full bg-[#DFD5C3]"></span>
+            </div>
 
-          <!-- Bàn dù cà phê ngoài trời bên trái & phải (nằm gọn phía sau nhân vật) -->
-          <g transform="translate(262, 326)">
-            <ellipse cx="40" cy="56" rx="34" ry="8" fill="#466F41" opacity="0.28"/>
-            <rect x="37" y="12" width="6" height="44" fill="#8C6244" stroke="#4A3528" stroke-width="2"/>
-            <path d="M4 18 Q40 -14 76 18 Z" fill="#F29E84" stroke="#5A392C" stroke-width="2.5"/>
-            <path d="M22 18 Q40 -10 58 18 Z" fill="#FFF8EC"/>
-            <ellipse cx="40" cy="39" rx="22" ry="7" fill="#FFF8EC" stroke="#5A392C" stroke-width="2.2"/>
-          </g>
-          <g transform="translate(946, 326)">
-            <ellipse cx="40" cy="56" rx="34" ry="8" fill="#466F41" opacity="0.28"/>
-            <rect x="37" y="12" width="6" height="44" fill="#8C6244" stroke="#4A3528" stroke-width="2"/>
-            <path d="M4 18 Q40 -14 76 18 Z" fill="#77A78B" stroke="#364E40" stroke-width="2.5"/>
-            <path d="M22 18 Q40 -10 58 18 Z" fill="#FFF8EC"/>
-            <ellipse cx="40" cy="39" rx="22" ry="7" fill="#FFF8EC" stroke="#5A392C" stroke-width="2.2"/>
-          </g>
-
-          <!-- ========= TẦNG 4: TRUNG TÂM TIỆM CÀ PHÊ ROO CAFE ========= -->
-          <g id="ts-cafe-building" filter="url(#ts-soft-shadow)">
-            <!-- Bóng đổ công trình xuống nền sân -->
-            <ellipse cx="640" cy="382" rx="224" ry="18" fill="#6F5B43" opacity="0.25"/>
-
-            <!-- Ống khói gạch ấm tỏa khói hương cà phê -->
-            <rect x="760" y="138" width="38" height="58" rx="5" fill="#C97358" stroke="#4A3328" stroke-width="3"/>
-            <rect x="754" y="132" width="50" height="12" rx="4" fill="#E3977C" stroke="#4A3328" stroke-width="2.8"/>
-            <g class="anim-chimney">
-              <circle cx="779" cy="122" r="10" fill="#FFFDF7" opacity="0.8"/>
-              <circle cx="790" cy="108" r="13" fill="#FFFDF7" opacity="0.65"/>
-            </g>
-            <g class="anim-chimney" style="animation-delay:1.8s">
-              <circle cx="776" cy="124" r="9" fill="#FFFDF7" opacity="0.75"/>
-              <circle cx="786" cy="112" r="12" fill="#FFFDF7" opacity="0.6"/>
-            </g>
-
-            <!-- Thân nhà quán cà phê -->
-            <rect x="444" y="236" width="392" height="146" rx="14" fill="url(#ts-cafe-wall)" stroke="#4A3528" stroke-width="3.6"/>
-            <!-- Phần chân tường ốp gỗ ấm -->
-            <rect x="444" y="336" width="392" height="46" rx="8" fill="#D5B084" stroke="#4A3528" stroke-width="3.2"/>
-            <g stroke="#B88E61" stroke-width="2" opacity="0.65">
-              <line x1="484" y1="338" x2="484" y2="380"/><line x1="524" y1="338" x2="524" y2="380"/>
-              <line x1="564" y1="338" x2="564" y2="380"/><line x1="716" y1="338" x2="716" y2="380"/>
-              <line x1="756" y1="338" x2="756" y2="380"/><line x1="796" y1="338" x2="796" y2="380"/>
-            </g>
-
-            <!-- Mái ngói chữ A duyên dáng -->
-            <path d="M412 246 L478 156 H802 L868 246 Z" fill="url(#ts-roof)" stroke="#4A3328" stroke-width="3.8" stroke-linejoin="round"/>
-            <!-- Viền gỗ mái -->
-            <path d="M428 232 H852" stroke="#F6D1B1" stroke-width="4" opacity="0.45"/>
-            <path d="M454 198 H826" stroke="#F6D1B1" stroke-width="3.5" opacity="0.35"/>
-
-            <!-- Bảng Hiệu Gỗ Nổi Bật "ROO CAFE" trên mái hiên -->
-            <g transform="translate(524, 174)">
-              <rect x="0" y="0" width="232" height="54" rx="16" fill="#46352C" stroke="#F6D79A" stroke-width="3.6"/>
-              <rect x="7" y="6" width="218" height="42" rx="11" fill="none" stroke="#9C7B5C" stroke-width="1.6" stroke-dasharray="5 4"/>
-              <text x="116" y="31" text-anchor="middle" fill="#FFE6A3" font-size="23" font-weight="800" font-family="Plus Jakarta Sans" letter-spacing="1.5">ROO CAFE</text>
-              <text x="116" y="44" text-anchor="middle" fill="#CBE6D4" font-size="9.5" font-weight="700" font-family="JetBrains Mono">COZY COFFEE · OPEN</text>
-            </g>
-
-            <!-- Mái hiên vải sọc Xanh Xô Thơm & Kem -->
-            <g stroke="#3B312B" stroke-width="2.6" stroke-linejoin="round">
-              <path d="M432 246 H848 L860 282 H420 Z" fill="#FFF9EE"/>
-              <polygon points="444,246 490,246 482,282 432,282" fill="#4E6E5D"/>
-              <polygon points="536,246 582,246 580,282 532,282" fill="#4E6E5D"/>
-              <polygon points="628,246 674,246 674,282 628,282" fill="#4E6E5D"/>
-              <polygon points="720,246 766,246 770,282 722,282" fill="#4E6E5D"/>
-              <polygon points="812,246 848,246 860,282 818,282" fill="#4E6E5D"/>
-              <!-- Viền lượn sóng mềm dưới mái hiên -->
-              <path d="M420 282 Q442 296 464 282 Q486 296 508 282 Q530 296 552 282 Q574 296 596 282 Q618 296 640 282 Q662 296 684 282 Q706 296 728 282 Q750 296 772 282 Q794 296 816 282 Q838 296 860 282"
-                    fill="#E9DEC8"/>
-            </g>
-
-            <!-- Dây đèn đom đóm lung linh dưới mái hiên -->
-            <g class="anim-fairy">
-              <circle cx="464" cy="292" r="4.5" fill="#FFE694"/><circle cx="464" cy="292" r="10" fill="#FFE694" opacity="0.34"/>
-              <circle cx="530" cy="293" r="4.5" fill="#FFD3A3"/><circle cx="530" cy="293" r="10" fill="#FFD3A3" opacity="0.34"/>
-              <circle cx="596" cy="292" r="4.5" fill="#FFE694"/><circle cx="596" cy="292" r="10" fill="#FFE694" opacity="0.34"/>
-              <circle cx="684" cy="292" r="4.5" fill="#FFE694"/><circle cx="684" cy="292" r="10" fill="#FFE694" opacity="0.34"/>
-              <circle cx="750" cy="293" r="4.5" fill="#FFD3A3"/><circle cx="750" cy="293" r="10" fill="#FFD3A3" opacity="0.34"/>
-              <circle cx="816" cy="292" r="4.5" fill="#FFE694"/><circle cx="816" cy="292" r="10" fill="#FFE694" opacity="0.34"/>
-            </g>
-
-            <!-- Hai cửa sổ kính lớn ánh đèn vàng ấm -->
-            <g>
-              <rect x="468" y="298" width="110" height="62" rx="12" fill="url(#ts-win-warm)" stroke="#4A3528" stroke-width="3"/>
-              <line x1="523" y1="298" x2="523" y2="360" stroke="#4A3528" stroke-width="2.5"/>
-              <line x1="468" y1="330" x2="578" y2="330" stroke="#4A3528" stroke-width="2.5"/>
-              <!-- Bồn hoa dưới cửa sổ trái -->
-              <rect x="462" y="354" width="122" height="14" rx="5" fill="#C68A63" stroke="#4A3528" stroke-width="2.4"/>
-              <circle cx="484" cy="350" r="7" fill="#6FB374"/><circle cx="504" cy="348" r="6" fill="#F59FA7"/>
-              <circle cx="524" cy="350" r="7" fill="#6FB374"/><circle cx="546" cy="348" r="6" fill="#FFE184"/>
-              <circle cx="566" cy="350" r="7" fill="#6FB374"/>
-
-              <rect x="702" y="298" width="110" height="62" rx="12" fill="url(#ts-win-warm)" stroke="#4A3528" stroke-width="3"/>
-              <line x1="757" y1="298" x2="757" y2="360" stroke="#4A3528" stroke-width="2.5"/>
-              <line x1="702" y1="330" x2="812" y2="330" stroke="#4A3528" stroke-width="2.5"/>
-              <!-- Bồn hoa dưới cửa sổ phải -->
-              <rect x="696" y="354" width="122" height="14" rx="5" fill="#C68A63" stroke="#4A3528" stroke-width="2.4"/>
-              <circle cx="718" cy="350" r="7" fill="#6FB374"/><circle cx="738" cy="348" r="6" fill="#FFE184"/>
-              <circle cx="758" cy="350" r="7" fill="#6FB374"/><circle cx="780" cy="348" r="6" fill="#F59FA7"/>
-              <circle cx="798" cy="350" r="7" fill="#6FB374"/>
-            </g>
-
-            <!-- Cửa vòm gỗ ấm chính giữa quán -->
-            <path d="M604 382 V318 A36 30 0 0 1 676 318 V382 Z" fill="#8C5F42" stroke="#3E2A20" stroke-width="3.2"/>
-            <path d="M613 348 V320 A27 21 0 0 1 667 320 V348 Z" fill="url(#ts-win-warm)" stroke="#3E2A20" stroke-width="2.4"/>
-            <circle cx="662" cy="358" r="4" fill="#F7D57E" stroke="#3E2A20" stroke-width="1.6"/>
-            <!-- Biển nhỏ "OPEN" treo trên kính cửa -->
-            <rect x="624" y="328" width="32" height="14" rx="4" fill="#4E6E5D" stroke="#FFFDF9" stroke-width="1.5"/>
-            <text x="640" y="338" text-anchor="middle" fill="#FFFDF9" font-size="7.5" font-weight="800" font-family="Plus Jakarta Sans">OPEN</text>
-
-            <!-- Bảng phấn Menu chữ A đặt bên trái cửa quán -->
-            <g transform="translate(402, 336)">
-              <polygon points="8,46 16,4 42,4 50,46" fill="#3D3430" stroke="#A67E58" stroke-width="3" stroke-linejoin="round"/>
-              <text x="29" y="21" text-anchor="middle" fill="#FFE6A3" font-size="7.5" font-weight="800">MENU</text>
-              <line x1="18" y1="28" x2="40" y2="28" stroke="#CFE0D6" stroke-width="1.8" stroke-linecap="round"/>
-              <line x1="18" y1="35" x2="36" y2="35" stroke="#F6C2C4" stroke-width="1.8" stroke-linecap="round"/>
-            </g>
-
-            <!-- Chậu cây xanh nhỏ trang trí bên phải cửa quán -->
-            <g transform="translate(840, 334)">
-              <path d="M6 22 H34 L30 46 H10 Z" fill="#D48466" stroke="#4A3528" stroke-width="2.4"/>
-              <circle cx="20" cy="14" r="14" fill="#6AB070" stroke="#36593A" stroke-width="2.4"/>
-              <circle cx="14" cy="11" r="4" fill="#9EDB9E" opacity="0.65"/>
-            </g>
-          </g>
-
-          <!-- Bụi hoa & cỏ sinh động viền hai bên sân -->
-          <g>
-            <!-- Bụi cỏ hoa góc trái -->
-            <ellipse cx="64" cy="404" rx="58" ry="26" fill="#63A85C" stroke="#366135" stroke-width="2.8"/>
-            <ellipse cx="136" cy="410" rx="42" ry="20" fill="#77BE6E" stroke="#366135" stroke-width="2.6"/>
-            <circle cx="48" cy="396" r="5.5" fill="#FFF4B8"/><circle cx="78" cy="406" r="5" fill="#FFB5C0"/><circle cx="128" cy="404" r="5" fill="#FFF4B8"/>
-            <!-- Bụi cỏ hoa góc phải -->
-            <ellipse cx="1216" cy="404" rx="58" ry="26" fill="#63A85C" stroke="#366135" stroke-width="2.8"/>
-            <ellipse cx="1142" cy="410" rx="42" ry="20" fill="#77BE6E" stroke="#366135" stroke-width="2.6"/>
-            <circle cx="1224" cy="396" r="5.5" fill="#FFB5C0"/><circle cx="1192" cy="408" r="5" fill="#FFF4B8"/><circle cx="1146" cy="402" r="5" fill="#FFE699"/>
-          </g>
-
-          <!-- Bươm bướm pastel nhỏ bay nhẹ tạo sức sống -->
-          <g class="anim-butterfly" transform="translate(362, 236)">
-            <ellipse cx="-4" cy="-2" rx="5" ry="3.5" transform="rotate(-24 -4 -2)" fill="#FFE38E" stroke="#5A4235" stroke-width="1.4"/>
-            <ellipse cx="4" cy="-2" rx="5" ry="3.5" transform="rotate(24 4 -2)" fill="#FFE38E" stroke="#5A4235" stroke-width="1.4"/>
-          </g>
-          <g class="anim-butterfly" style="animation-delay:2.6s" transform="translate(902, 224)">
-            <ellipse cx="-4" cy="-2" rx="5" ry="3.5" transform="rotate(-24 -4 -2)" fill="#F9C5D1" stroke="#5A4235" stroke-width="1.4"/>
-            <ellipse cx="4" cy="-2" rx="5" ry="3.5" transform="rotate(24 4 -2)" fill="#F9C5D1" stroke="#5A4235" stroke-width="1.4"/>
-          </g>
-
-          <!-- ========= TẦNG 5: 13 NHÂN VẬT TOÀN THÂN ĐẦY ĐỦ CHÂN THEO 3 LỚP CHIỀU SÂU ========= -->
-          <g id="title-cast-stage"></g>
-
-          <!-- ========= TẦNG 6: LOGO ROOCOZY NỔI BẬT PHÍA TRÊN ========= -->
-          <g id="ts-game-logo" transform="translate(640, 74)" filter="url(#ts-soft-shadow)">
-            <!-- Nền ruy băng gỗ-kem nhẹ phía sau tên game -->
-            <rect x="-226" y="-44" width="452" height="84" rx="34" fill="#463329" stroke="#FBE5B8" stroke-width="4.5"/>
-            <rect x="-216" y="-36" width="432" height="68" rx="28" fill="#5A4336"/>
-            <!-- Lá cà phê xanh pastel trang trí góc chữ -->
-            <ellipse cx="-192" cy="-26" rx="14" ry="7" transform="rotate(-32 -192 -26)" fill="#89C992" stroke="#2D4A33" stroke-width="2.5"/>
-            <ellipse cx="192" cy="-26" rx="14" ry="7" transform="rotate(32 192 -26)" fill="#89C992" stroke="#2D4A33" stroke-width="2.5"/>
-            <!-- Chữ RooCozy viền đậm rực rỡ -->
-            <text x="-78" y="13" text-anchor="middle" font-family="Plus Jakarta Sans, Be Vietnam Pro, sans-serif" font-size="60" font-weight="800"
-                  fill="url(#ts-logo-grad)" stroke="#2F2118" stroke-width="8" paint-order="stroke" stroke-linejoin="round">Roo</text>
-            <text x="80" y="13" text-anchor="middle" font-family="Plus Jakarta Sans, Be Vietnam Pro, sans-serif" font-size="60" font-weight="800"
-                  fill="url(#ts-logo-cozy)" stroke="#24382A" stroke-width="8" paint-order="stroke" stroke-linejoin="round">Cozy</text>
-            <!-- Dòng phụ nhỏ gọn -->
-            <rect x="-148" y="29" width="296" height="22" rx="11" fill="#FFF8E8" stroke="#6B503B" stroke-width="2.4"/>
-            <text x="0" y="44" text-anchor="middle" fill="#634832" font-size="11.5" font-weight="800" font-family="Be Vietnam Pro, sans-serif" letter-spacing="0.4">
-              TIỆM CÀ PHÊ ROO · HỌC TẬP &amp; CAFE JAZZ
-            </text>
-          </g>
-
-          <!-- ========= TẦNG 7: KHUNG CỎ & ĐẤT GỖ PHÍA DƯỚI (NỀN CHO NÚT CHƠI) ========= -->
-          <g id="ts-bottom-banner-art">
-            <rect x="308" y="668" width="664" height="84" rx="22" fill="#6B4830" stroke="#3B271A" stroke-width="4.5"/>
-            <rect x="318" y="676" width="644" height="68" rx="16" fill="#7D563B"/>
-            <!-- Viền cỏ xanh tươi ôm mép trên khung nút chơi -->
-            <path d="M298 678 Q318 654 340 672 Q364 652 388 672 Q414 654 440 672 Q466 652 492 672 Q520 654 548 672 Q576 652 604 672 Q632 654 660 672 Q688 652 716 672 Q744 654 772 672 Q800 652 828 672 Q856 654 884 672 Q912 652 940 672 Q964 656 982 678 L972 686 H308 Z"
-                  fill="#6FC267" stroke="#2D572B" stroke-width="3" stroke-linejoin="round"/>
-            <!-- Hoa nhỏ trang trí mép cỏ -->
-            <circle cx="348" cy="672" r="5" fill="#FFF4B8"/><circle cx="932" cy="672" r="5" fill="#FFB8C4"/>
-          </g>
-        </svg>
-
-        <!-- NÚT CHẠM ĐỂ CHƠI / CHƠI TIẾP NẰM GỌN TRONG KHUNG GỖ PHÍA DƯỚI (KHÔNG CHE NHÂN VẬT!) -->
-        <div class="absolute bottom-[1.4%] left-1/2 -translate-x-1/2 z-20 w-[50%] min-w-[270px] max-w-[610px] px-2 flex items-center justify-center gap-2 sm:gap-3">
-          <button type="button" id="btn-title-continue" onclick="enterGame('continue')"
-            class="hidden tactile flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-2xl bg-gradient-to-b from-[#69A87D] to-[#467A59] hover:brightness-105 border-2 border-[#E6F7EB] text-white font-display font-extrabold text-xs sm:text-base shadow-cozy flex items-center justify-center gap-1.5 sm:gap-2">
-            <i data-lucide="play" class="w-4 h-4 fill-current shrink-0"></i>
-            <span class="truncate">CHƠI TIẾP</span>
-            <span id="title-continue-badge" class="hidden sm:inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/20 text-[#FFF4C2]">Lv.1</span>
-          </button>
-
-          <button type="button" id="btn-title-new" onclick="handleTitleNewGame()"
-            class="tactile flex-1 py-2 sm:py-2.5 px-4 sm:px-6 rounded-2xl bg-gradient-to-b from-[#FFE699] to-[#F0B954] hover:brightness-105 border-2 border-[#FFF8DF] text-[#4A2E14] font-display font-extrabold text-xs sm:text-base shadow-cozy flex items-center justify-center gap-1.5 sm:gap-2">
-            <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
-            <span id="btn-title-new-label" class="truncate">CHẠM ĐỂ CHƠI!</span>
-          </button>
+            <p class="text-xs sm:text-sm font-medium text-[#7A6E63] text-center max-w-md leading-relaxed">
+              Một góc quán nhỏ dịu dàng để pha cà phê, nghe nhạc Jazz và tập trung cùng Roo &amp; Bé Gấu.
+            </p>
+          </div>
         </div>
 
-        <!-- Thanh thông tin lưu nhỏ gọn góc dưới trái (chỉ hiện nhẹ nhàng, không che nhân vật) -->
-        <div id="title-save-pill" class="hidden sm:flex items-center gap-1.5 absolute bottom-2.5 left-3.5 z-20 px-2.5 py-1 rounded-full bg-[#FFFDF8]/88 backdrop-blur-sm border border-[#E5D3B3] text-[10px] font-bold text-[#5A4434]">
-          <span>🏡</span>
-          <span id="title-save-sub">Chạm vào các bé để làm quen!</span>
+        <!-- PHẦN CHÂN: NÚT CHƠI PASTEL GỌN GÀNG -->
+        <div class="relative z-20 w-full flex flex-col items-center gap-2.5 pt-1">
+          <div class="w-full max-w-[420px] flex items-center justify-center gap-2.5 sm:gap-3">
+            <button type="button" id="btn-title-continue" onclick="enterGame('continue')"
+              class="hidden tactile flex-1 py-3 px-4 sm:px-5 rounded-2xl bg-[#4E6E5D] hover:bg-[#3F5B4C] border border-[#CFE0D6] text-white font-display font-extrabold text-xs sm:text-sm shadow-cozy flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 fill-current shrink-0"></i>
+              <span class="truncate">CHƠI TIẾP</span>
+              <span id="title-continue-badge" class="hidden sm:inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/15 text-[#FFF4CC]">Lv.1</span>
+            </button>
+
+            <button type="button" id="btn-title-new" onclick="handleTitleNewGame()"
+              class="tactile flex-1 py-3 px-5 sm:px-6 rounded-2xl bg-gradient-to-b from-[#FCE9B2] to-[#F2C774] hover:brightness-[1.03] border border-[#E6BA66] text-[#4D341B] font-display font-extrabold text-xs sm:text-sm shadow-cozy flex items-center justify-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
+              <span id="btn-title-new-label" class="truncate">CHẠM ĐỂ CHƠI!</span>
+            </button>
+          </div>
+
+          <div id="title-save-pill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-paper/85 border border-[#E6DEC9] text-[10px] sm:text-[11px] font-semibold text-[#7A6B5C]">
+            <span>🏡</span>
+            <span id="title-save-sub">Tiệm cà phê nhỏ ấm cúng · Lưu tự động trên máy</span>
+          </div>
         </div>
 
       </div>
@@ -768,7 +521,7 @@
           <div class="leading-tight">
             <div class="font-display font-extrabold text-sm tracking-tight text-ink flex items-center gap-1.5">
               <span>RooCozy</span>
-              <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-sage-soft text-sage-text">v1.7.2</span>
+              <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-sage-soft text-sage-text">v1.8.1</span>
             </div>
             <span class="block text-[10px] text-muted">Màn hình chính</span>
           </div>
@@ -821,6 +574,11 @@
 
         <button onclick="openModal('settings-modal')" class="zen-hide zen-transition tactile p-2.5 rounded-2xl bg-paper/95 border border-hairline shadow-cozy text-muted hover:text-ink" title="Lưu dữ liệu & Đóng gói CEO">
           <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+
+        <button type="button" onclick="togglePauseGame()" id="btn-pause-game" class="tactile px-3 py-2.5 rounded-2xl bg-honey-soft/95 hover:bg-[#fae7b6] border border-honey-border shadow-cozy text-xs font-bold text-honey-text flex items-center gap-1.5" title="Tạm dừng game bất cứ lúc nào (Phím P / Esc)">
+          <i data-lucide="pause" id="pause-hud-icon" class="w-4 h-4"></i>
+          <span class="hidden sm:inline" id="pause-hud-label">Tạm dừng</span>
         </button>
 
         <button onclick="toggleZenMode()" id="btn-zen-mode" class="tactile px-3 py-2.5 rounded-2xl bg-paper/95 border border-hairline shadow-cozy text-xs font-semibold text-ink hover:border-sage-border flex items-center gap-1.5" title="Ẩn/Hiện giao diện để tập trung ngắm quán">
@@ -1288,6 +1046,20 @@
             <ellipse cx="136" cy="140" rx="19" ry="5.5" fill="#B7926D" stroke="#4D3E35" stroke-width="2.2"/>
             <g id="drink-slot-2"></g>
           </g>
+
+          <!-- NHÂN VIÊN ĐI SHIP: BÉ GẤU (CHÓ ĐỐM MẶT VÀNG HÒA HỢP) ĐỨNG GÓC LẤY ĐƠN -->
+          <g id="gau-staff-indoor" transform="translate(226, 392)" style="cursor: pointer;" onclick="petGau()">
+            <title>Bé Gấu · Chạm để xoa đầu Gấu (+2 🫘 &amp; Gấu Hăng Hái ⚡)</title>
+            <g id="gau-indoor-visual"></g>
+            <g id="gau-pet-hand-indoor" class="hidden" transform="translate(30, -8)" pointer-events="none">
+              <g class="anim-pet-hand">
+                <path d="M12 24 C10 14, 18 8, 28 10 C35 6, 45 10, 46 18 C52 18, 55 25, 48 31 C40 37, 20 37, 13 31 Z"
+                      fill="#FFE2C8" stroke="#5A4235" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M22 14 L20 24 M30 12 L29 24 M38 14 L37 24" stroke="#E0B696" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 10 L8 6 M52 8 L56 4" stroke="#F4949B" stroke-width="2.4" stroke-linecap="round"/>
+              </g>
+            </g>
+          </g>
           </g>
 
           <!-- ==================== KHU VỰC 2: SÂN VƯỜN NGOÀI TRỜI ROO ==================== -->
@@ -1544,6 +1316,20 @@
             <rect x="131" y="112" width="10" height="28" rx="4" fill="#B7926D" stroke="#4D3E35" stroke-width="2.2"/>
             <ellipse cx="136" cy="140" rx="19" ry="5.5" fill="#B7926D" stroke="#4D3E35" stroke-width="2.2"/>
             <g id="drink-slot-6"></g>
+          </g>
+
+          <!-- NHÂN VIÊN ĐI SHIP: BÉ GẤU TRỰC BÊN QUẦY TAKE-AWAY SÂN VƯỜN -->
+          <g id="gau-staff-garden" transform="translate(228, 390)" style="cursor: pointer;" onclick="petGau()">
+            <title>Bé Gấu · Chạm để xoa đầu Gấu (+2 🫘 &amp; Gấu Hăng Hái ⚡)</title>
+            <g id="gau-garden-visual"></g>
+            <g id="gau-pet-hand-garden" class="hidden" transform="translate(30, -8)" pointer-events="none">
+              <g class="anim-pet-hand">
+                <path d="M12 24 C10 14, 18 8, 28 10 C35 6, 45 10, 46 18 C52 18, 55 25, 48 31 C40 37, 20 37, 13 31 Z"
+                      fill="#FFE2C8" stroke="#5A4235" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M22 14 L20 24 M30 12 L29 24 M38 14 L37 24" stroke="#E0B696" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 10 L8 6 M52 8 L56 4" stroke="#F4949B" stroke-width="2.4" stroke-linecap="round"/>
+              </g>
+            </g>
           </g>
           </g>
 
@@ -1802,11 +1588,16 @@
         </div>
 
         <!-- Bottom-Left Quick Actions Inside Stage -->
-        <div class="zen-hide zen-transition absolute bottom-3 left-3 z-20 flex items-center gap-2">
+        <div class="zen-hide zen-transition absolute bottom-3 left-3 z-20 flex items-center gap-1.5 sm:gap-2 flex-wrap">
           <button onclick="petRoo()" id="btn-pet-roo"
-            class="tactile px-4 py-2.5 rounded-2xl bg-peach-soft/95 hover:bg-[#f7ddd5] backdrop-blur-md border border-peach-border shadow-cozy text-xs font-extrabold text-peach-text flex items-center gap-1.5" title="Xoa đầu chủ quán Roo">
+            class="tactile px-3.5 py-2.5 rounded-2xl bg-peach-soft/95 hover:bg-[#f7ddd5] backdrop-blur-md border border-peach-border shadow-cozy text-xs font-extrabold text-peach-text flex items-center gap-1.5" title="Xoa đầu chủ quán Roo (+2 🫘)">
             <span>🐾</span>
             <span>Xoa đầu Roo</span>
+          </button>
+          <button onclick="petGau()" id="btn-pet-gau"
+            class="tactile px-3.5 py-2.5 rounded-2xl bg-honey-soft/95 hover:bg-[#fae7b6] backdrop-blur-md border border-honey-border shadow-cozy text-xs font-extrabold text-honey-text flex items-center gap-1.5" title="Xoa đầu Shipper Bé Gấu (+2 🫘 &amp; giao hàng nhanh hơn 20%)">
+            <span id="btn-pet-gau-icon">🐶</span>
+            <span id="btn-pet-gau-label">Xoa đầu Gấu</span>
           </button>
           <button onclick="ringCafeBell()" id="btn-ring-bell"
             class="tactile px-3.5 py-2.5 rounded-2xl bg-paper/95 backdrop-blur-md border border-hairline shadow-cozy text-xs font-bold text-ink hover:border-sage-border flex items-center gap-1.5">
@@ -2212,7 +2003,7 @@
 
       <div class="p-4 rounded-2xl bg-cream border border-hairline space-y-2 text-xs text-ink">
         <div class="flex justify-between"><span class="text-muted">Chủ quán:</span><strong>Bé Chó Roo (Đen mặt vàng)</strong></div>
-        <div class="flex justify-between"><span class="text-muted">Phiên bản:</span><strong>RooCozy v1.7.2</strong></div>
+        <div class="flex justify-between"><span class="text-muted">Phiên bản:</span><strong>RooCozy v1.8.1</strong></div>
         <div class="flex justify-between"><span class="text-muted">Cấp độ tiệm:</span><strong>Level <span id="set-level">1</span></strong></div>
         <div class="flex justify-between"><span class="text-muted">Chuỗi ngày ghé tiệm:</span><strong>🔥 <span id="set-streak">1</span> ngày</strong></div>
         <div class="flex justify-between"><span class="text-muted">Tổng phút tập trung:</span><strong><span id="set-focus">0</span> phút</strong></div>
@@ -2253,6 +2044,99 @@
       <button id="btn-reset-game" onclick="resetGameConfirm()" class="tactile w-full py-2.5 rounded-xl bg-peach-soft hover:bg-[#f4dcd4] border border-peach-border text-xs font-bold text-peach-text">
         Chơi lại từ đầu (Xóa dữ liệu lưu)
       </button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       8.5. MODAL TẠM DỪNG GAME (COZY PAUSE SCREEN)
+       ======================================================== -->
+  <div id="pause-modal" class="modal-backdrop fixed inset-0 z-[65] bg-[#26201D]/45 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="modal-panel w-full max-w-[420px] bg-paper border-2 border-[#E5DEC9] rounded-[2.2rem] overflow-hidden shadow-cozy-lg">
+      <!-- Header Pastel Ấm Áp -->
+      <div class="relative bg-gradient-to-br from-[#FBF4E4] via-[#F5EFE3] to-[#E6EFEA] px-6 pt-6 pb-5 border-b border-hairline text-center space-y-2.5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-paper/90 border border-honey-border text-[10px] font-mono font-bold text-honey-text tracking-wide">
+          <span class="w-2 h-2 rounded-full bg-honey"></span>
+          <span>ĐANG TẠM DỪNG · PHÍM P / ESC</span>
+        </div>
+
+        <!-- Biểu tượng tách cà phê nghỉ ngơi nhẹ nhàng -->
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-paper border border-[#E6DDD0] shadow-cozy flex items-center justify-center">
+          <svg viewBox="0 0 80 80" class="w-12 h-12" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="61" rx="23" ry="6" fill="#E6EFEA" stroke="#5A4A40" stroke-width="2.2"/>
+            <path d="M21 30 H55 V44 C55 54 47.5 60 38 60 C28.5 60 21 54 21 44 Z" fill="#FFFDF9" stroke="#5A4A40" stroke-width="2.3" stroke-linejoin="round"/>
+            <path d="M55 34 C63 34 64 47 54 48" fill="none" stroke="#5A4A40" stroke-width="2.4" stroke-linecap="round"/>
+            <ellipse cx="38" cy="30" rx="17" ry="5" fill="#CFA074" stroke="#5A4A40" stroke-width="2.2"/>
+            <text x="53" y="21" fill="#8A7665" font-size="11" font-weight="800" font-family="Plus Jakarta Sans">z</text>
+            <text x="61" y="14" fill="#A59281" font-size="13" font-weight="800" font-family="Plus Jakarta Sans">Z</text>
+          </svg>
+        </div>
+
+        <div>
+          <h3 class="font-display text-xl font-extrabold text-ink tracking-tight">Tiệm Đang Tạm Nghỉ</h3>
+          <p class="text-xs text-muted mt-0.5 leading-relaxed">Mọi đồng hồ khách, đơn ship của Gấu &amp; Pomodoro đều đã được giữ nguyên.</p>
+        </div>
+      </div>
+
+      <!-- Nội dung & Thống kê nhanh + Cài đặt âm thanh tức thì -->
+      <div class="p-5 sm:p-6 space-y-4">
+        <!-- 4 Ô Thống Kê Hiện Tại -->
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="p-2.5 rounded-2xl bg-cream border border-hairline">
+            <span class="block text-[10px] text-muted">Cấp tiệm</span>
+            <strong id="pause-stat-lv" class="font-mono text-xs font-extrabold text-sage-text">Lv.1</strong>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-honey-soft/75 border border-honey-border">
+            <span class="block text-[10px] text-honey-text">Hạt Đậu</span>
+            <strong id="pause-stat-coins" class="font-mono text-xs font-extrabold text-honey-text">60 🫘</strong>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-cream border border-hairline">
+            <span class="block text-[10px] text-muted">Đã phục vụ</span>
+            <strong id="pause-stat-served" class="font-mono text-xs font-extrabold text-ink">0 ly</strong>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-sage-soft/60 border border-sage-border">
+            <span class="block text-[10px] text-sage-text">Tập trung</span>
+            <strong id="pause-stat-focus" class="font-mono text-xs font-extrabold text-sage-text">0p</strong>
+          </div>
+        </div>
+
+        <!-- Trạng thái phụ (nếu Pomodoro hoặc Gấu đang chạy dở) -->
+        <div id="pause-live-note" class="hidden px-3 py-2 rounded-2xl bg-skyc-soft/70 border border-skyc-border text-[11px] font-semibold text-skyc-text text-center"></div>
+
+        <!-- 2 Nút Bật/Tắt nhanh Nhạc Jukebox & Âm thanh SFX -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="toggleMasterAudio(); updatePauseModalUI();" id="pause-btn-music"
+            class="tactile py-2.5 px-3 rounded-2xl bg-cream hover:bg-sage-soft/70 border border-hairline text-xs font-bold text-ink flex items-center justify-center gap-1.5">
+            <span>🎵</span>
+            <span id="pause-music-status">Nhạc: Tắt</span>
+          </button>
+          <button type="button" onclick="toggleSfxEnabled()" id="pause-btn-sfx"
+            class="tactile py-2.5 px-3 rounded-2xl bg-sage-soft/75 hover:bg-sage-soft border border-sage-border text-xs font-bold text-sage-text flex items-center justify-center gap-1.5">
+            <span>🔊</span>
+            <span id="pause-sfx-status">Hiệu ứng: Bật</span>
+          </button>
+        </div>
+
+        <!-- Nút Tiếp Tục Chơi chính nổi bật -->
+        <button type="button" onclick="resumeGame()"
+          class="tactile w-full py-3.5 px-5 rounded-2xl bg-sage hover:bg-sage-hover text-white font-display font-extrabold text-sm shadow-cozy flex items-center justify-center gap-2">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+          <span>Tiếp tục mở tiệm</span>
+        </button>
+
+        <!-- Hàng nút phụ: Lưu nhanh & Về Màn hình chờ -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="quickSaveFromPause()"
+            class="tactile py-2.5 px-3 rounded-2xl bg-cream hover:bg-honey-soft border border-hairline hover:border-honey-border text-xs font-bold text-ink flex items-center justify-center gap-1.5">
+            <i data-lucide="save" class="w-3.5 h-3.5 text-sage"></i>
+            <span>Lưu nhanh</span>
+          </button>
+          <button type="button" onclick="exitToTitleFromPause()"
+            class="tactile py-2.5 px-3 rounded-2xl bg-cream hover:bg-peach-soft border border-hairline hover:border-peach-border text-xs font-bold text-muted hover:text-peach-text flex items-center justify-center gap-1.5">
+            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+            <span>Màn hình chờ</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2606,7 +2490,7 @@
 
     const DAILY_QUEST_DEFS = [
       { id: 'q_serve', emoji: '☕', title: 'Phục vụ 4 vị khách ghé tiệm', desc: 'Chạm vào bong bóng gọi món hoặc để Roo tự pha khi học.', target: 4, reward: 35 },
-      { id: 'q_pet', emoji: '🐾', title: 'Xoa đầu chủ quán Roo 3 lần', desc: 'Chạm trực tiếp vào bé chó Roo ở quầy pha chế.', target: 3, reward: 20 },
+      { id: 'q_pet', emoji: '🐾', title: 'Xoa đầu Roo hoặc Gấu 3 lần', desc: 'Chạm vào Bé Chó Roo hoặc Shipper Bé Gấu để nhận thưởng & tiếp sức!', target: 3, reward: 20 },
       { id: 'q_focus', emoji: '📚', title: 'Tích lũy 5 điểm Tập Trung', desc: '1 phút Pomodoro = 1 điểm · 1 Giấy Nhớ hoàn thành = 2 điểm.', target: 5, reward: 45 },
       { id: 'q_ship', emoji: '🛵', title: 'Giao thành công 2 đơn RooShip', desc: 'Mở 📱 BAEOS (RooShip) nhận đơn giao hàng cho các bạn không tới quán được.', target: 2, reward: 40 }
     ];
@@ -2762,6 +2646,7 @@
       xp: 15,
       level: 1,
       weather: 'morning',
+      sfxEnabled: true,
       wallTheme: 'cream',
       ownedWalls: ['cream'],
       ownedDecor: [],
@@ -3353,6 +3238,88 @@
               <g transform="translate(2, 4)">${getRooFaceSvg(eq.face)}</g>
               <g transform="translate(2, 5)">${getRooNeckSvg(eq.neck)}</g>
               <g transform="translate(2, 7)">${getRooHatSvg(eq.hat)}</g>
+            </g>
+          `;
+          break;
+        }
+
+        // 1A. NHÂN VIÊN GIAO HÀNG: BÉ GẤU 🐶 — CHÓ ĐỐM GƯƠNG MẶT VÀNG HÒA HỢP VỚI MÀU ĐỐM + ĐỒNG PHỤC ROOSHIP
+        case 'staff_gau': {
+          art = `
+            ${groundShadow}
+            <g class="anim-breathe">
+              <!-- Đuôi đốm caramel-kem vẫy vui vẻ -->
+              <g class="anim-tail" style="transform-origin: 102px 113px;">
+                <path d="M100 113 Q126 98 128 112 Q128 122 104 119 Z" fill="#FFF3DC" stroke="${stroke}" stroke-width="2.6" stroke-linejoin="round"/>
+                <circle cx="121" cy="109" r="5" fill="#C98D52"/>
+              </g>
+              <!-- 2 chân đứng/đi kem đốm đi giày thể thao chạy ship -->
+              ${drawBipedalLegs('#FFF4DF', '#4E6E5D', stroke, 13.5, 9.5)}
+              ${isSitting ? '' : '<circle cx="66" cy="124" r="3" fill="#C98D52" opacity="0.85"/><circle cx="94" cy="129" r="3.2" fill="#B57A42" opacity="0.82"/>'}
+
+              <!-- Áo đồng phục giao hàng RooShip (Xanh Xô Thơm + Cổ kem + Túi vàng mật ong) -->
+              <path d="M50 83 Q80 75 110 83 L109 121 Q80 127 51 121 Z" fill="#4E6E5D" stroke="#2D4538" stroke-width="2.6" stroke-linejoin="round"/>
+              <path d="M67 80 L80 91 L93 80 Z" fill="#FFF6E5" stroke="#2D4538" stroke-width="1.8"/>
+              <rect x="68" y="99" width="24" height="14" rx="4.5" fill="#F5D38B" stroke="#6B4D25" stroke-width="1.8"/>
+              <!-- Biểu tượng nhỏ trên áo shipper Gấu -->
+              <circle cx="80" cy="106" r="3.2" fill="#4E6E5D"/>
+              <!-- Dây đeo chéo túi giao hàng RooShip -->
+              <path d="M58 82 L103 118" stroke="#D4955A" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M58 82 L103 118" stroke="#6D4A2F" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.6"/>
+              <!-- Túi giao hàng nâu ấm bên hông -->
+              <rect x="96" y="102" width="18" height="17" rx="4.5" fill="#D4955A" stroke="${stroke}" stroke-width="2.2"/>
+              <path d="M96 108 H114" stroke="#FFF4DF" stroke-width="2"/>
+
+              <!-- 2 Tay kem có đốm nâu caramel nhẹ -->
+              <ellipse cx="47" cy="99" rx="8.2" ry="12" transform="rotate(18 47 99)" fill="#FFF4DF" stroke="${stroke}" stroke-width="2.4"/>
+              <circle cx="46" cy="97" r="3.2" fill="#C98D52"/>
+              <ellipse cx="113" cy="99" rx="8.2" ry="12" transform="rotate(-18 113 99)" fill="#FFF4DF" stroke="${stroke}" stroke-width="2.4"/>
+              <circle cx="114" cy="96" r="3" fill="#B57A42"/>
+
+              <!-- Đôi tai cụp mềm bầu bĩnh (phối đốm caramel-cocoa hòa hợp) -->
+              <path d="M51 45 C36 46, 34 68, 45 73 C53 76, 58 63, 56 49 Z" fill="#C88E54" stroke="${stroke}" stroke-width="2.6" stroke-linejoin="round"/>
+              <ellipse cx="45" cy="61" rx="4.5" ry="6" transform="rotate(12 45 61)" fill="#9E6939" opacity="0.65"/>
+              <path d="M109 45 C124 46, 126 68, 115 73 C107 76, 102 63, 104 49 Z" fill="#FFF3DC" stroke="${stroke}" stroke-width="2.6" stroke-linejoin="round"/>
+              <circle cx="114" cy="56" r="5" fill="#C98D52"/>
+              <circle cx="112" cy="67" r="3.4" fill="#9E6939"/>
+
+              <!-- Đầu Chú Chó Đốm Bé Gấu (nền kem ấm, gương mặt vàng mật ong dịu hòa quyện cùng mảng đốm caramel!) -->
+              <ellipse cx="80" cy="57" rx="30" ry="26.5" fill="#FFF4DF" stroke="${stroke}" stroke-width="2.8"/>
+
+              <!-- Mảng mặt vàng mật ong dịu ôm giữa mặt — không gắt mà chuyển mềm vào màu lông kem & đốm -->
+              <path d="M55 58 C55 44, 66 37, 80 38 C94 37, 105 44, 105 58 C105 71, 95 79, 80 79 C65 79, 55 71, 55 58 Z"
+                    fill="#F7DC9F" opacity="0.86"/>
+              <!-- Mảng đốm caramel ấm quanh mắt trái & trán (tạo độ hòa hợp giữa mặt vàng & lông đốm!) -->
+              <path d="M56 46 C59 38, 70 36, 76 42 C80 47, 77 57, 69 59 C61 61, 54 54, 56 46 Z"
+                    fill="#D49B5C" opacity="0.72"/>
+              <circle cx="96" cy="43" r="6" fill="#C78A4F" opacity="0.68"/>
+              <circle cx="101" cy="53" r="3.4" fill="#B5773E" opacity="0.62"/>
+              <circle cx="62" cy="36" r="3.8" fill="#B5773E" opacity="0.65"/>
+
+              <!-- Mõm kem vàng sáng dịu -->
+              <ellipse cx="80" cy="65.5" rx="15.5" ry="10.2" fill="#FFF5DE"/>
+              <!-- Chân mày vàng mật ong nhỏ xinh -->
+              <ellipse cx="68" cy="46.5" rx="4.2" ry="2.1" fill="#FBE5B0"/>
+              <ellipse cx="92" cy="46.5" rx="4.2" ry="2.1" fill="#E9BE78"/>
+
+              <!-- Má ửng hồng ấm & Đôi mắt long lanh thân thiện -->
+              <ellipse cx="60" cy="63.5" rx="5.2" ry="3.1" fill="#F29E9E" opacity="${blushOp}"/>
+              <ellipse cx="100" cy="63.5" rx="5.2" ry="3.1" fill="#F29E9E" opacity="${blushOp}"/>
+              ${drawEyes(68, 92, 55, 4.3, '#231A15')}
+
+              <!-- Mũi nâu ấm & Nụ cười cún con hiền lành -->
+              <ellipse cx="80" cy="61.5" rx="4.9" ry="3.4" fill="#3B281E"/>
+              <ellipse cx="78.6" cy="60.4" rx="1.5" ry="0.8" fill="#6E5244"/>
+              ${isHappy
+                ? '<path d="M73 67 Q80 74.5 87 67" fill="#5A332B" stroke="#3B281E" stroke-width="2" stroke-linecap="round"/><path d="M76.5 69 Q80 75 83.5 69 Z" fill="#F28A9E"/>'
+                : '<path d="M74 67 Q77 70.5 80 67 Q83 70.5 86 67" fill="none" stroke="#3B281E" stroke-width="2.2" stroke-linecap="round"/>'}
+
+              <!-- Mũ lưỡi trai Shipper RooShip xanh sage pastel đội nghiêng cực dễ thương -->
+              <g transform="translate(80, 31) rotate(-6)">
+                <path d="M-24 2 C-22 -14, 22 -14, 24 2 Z" fill="#4E6E5D" stroke="#2D4538" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M-24 2 Q0 -4 30 3 Q18 10 -20 6 Z" fill="#F6E6C6" stroke="#2D4538" stroke-width="2.2" stroke-linejoin="round"/>
+                <circle cx="0" cy="-6" r="3.6" fill="#FFE08A" stroke="#6B4D25" stroke-width="1.4"/>
+              </g>
             </g>
           `;
           break;
@@ -4868,6 +4835,145 @@
       if (statusEl) statusEl.textContent = msgs[Math.floor(Math.random() * msgs.length)];
     }
 
+    // --- NHÂN VIÊN ĐI SHIP: BÉ GẤU (CHÓ ĐỐM MẶT VÀNG HÒA HỢP) + XOA ĐẦU GẤU ---
+    let gauHappyTimerId = null;
+    let gauPetCooldown = false;
+    let gauBoostUntil = 0; // Xoa đầu Gấu kích hoạt Gấu Hăng Hái (-20% thời gian giao đơn tiếp theo trong 60s)
+
+    function isGauBoosted() {
+      return Date.now() < gauBoostUntil;
+    }
+
+    function updateGauQuickButton() {
+      const btn = document.getElementById('btn-pet-gau');
+      const iconEl = document.getElementById('btn-pet-gau-icon');
+      const lblEl = document.getElementById('btn-pet-gau-label');
+      if (!btn || !iconEl || !lblEl) return;
+      if (activeDeliveries.length > 0) {
+        iconEl.textContent = '🛵';
+        lblEl.textContent = 'Gấu đang ship';
+        btn.className = 'tactile px-3.5 py-2.5 rounded-2xl bg-skyc-soft/95 hover:bg-[#d5e7f3] backdrop-blur-md border border-skyc-border shadow-cozy text-xs font-extrabold text-skyc-text flex items-center gap-1.5';
+      } else if (isGauBoosted()) {
+        iconEl.textContent = '⚡';
+        lblEl.textContent = 'Gấu Hăng Hái';
+        btn.className = 'tactile px-3.5 py-2.5 rounded-2xl bg-honey-soft/95 hover:bg-[#fae7b6] backdrop-blur-md border border-honey-border shadow-cozy text-xs font-extrabold text-honey-text flex items-center gap-1.5';
+      } else {
+        iconEl.textContent = '🐶';
+        lblEl.textContent = 'Xoa đầu Gấu';
+        btn.className = 'tactile px-3.5 py-2.5 rounded-2xl bg-honey-soft/95 hover:bg-[#fae7b6] backdrop-blur-md border border-honey-border shadow-cozy text-xs font-extrabold text-honey-text flex items-center gap-1.5';
+      }
+    }
+
+    function renderGauStaffVisuals(mode = 'idle') {
+      const slots = [
+        document.getElementById('gau-indoor-visual'),
+        document.getElementById('gau-garden-visual')
+      ];
+      const isAway = activeDeliveries.length > 0;
+
+      slots.forEach(slot => {
+        if (!slot) return;
+        if (mode === 'depart') {
+          slot.innerHTML = `
+            <g class="anim-gau-out" transform="scale(0.74)">
+              ${getFullBodyCharacterSvg('staff_gau', false, 'happy', null, 'stand')}
+            </g>
+          `;
+          setTimeout(() => {
+            if (activeDeliveries.length > 0) {
+              slot.innerHTML = '';
+            }
+          }, 660);
+          return;
+        }
+        if (isAway && mode !== 'return') {
+          slot.innerHTML = '';
+          return;
+        }
+        const cls = mode === 'return'
+          ? 'anim-gau-in'
+          : mode === 'pet'
+            ? 'anim-happy-squish'
+            : '';
+        const mood = (mode === 'happy' || mode === 'return' || mode === 'pet') ? 'happy' : 'idle';
+        slot.innerHTML = `
+          <g class="${cls}" transform="scale(0.74)">
+            ${getFullBodyCharacterSvg('staff_gau', false, mood, null, 'stand')}
+          </g>
+        `;
+      });
+      updateGauQuickButton();
+    }
+
+    function petGau() {
+      if (isGamePaused) return;
+      if (activeDeliveries.length > 0) {
+        const first = activeDeliveries[0];
+        const leftSec = Math.max(1, Math.ceil((first.endsAt - Date.now()) / 1000));
+        showToast(`🛵 Bé Gấu đang trên đường giao cho ${first.guest.name} (còn ${leftSec}s). Đợi Gấu về rồi xoa đầu tiếp nhé!`, 'info', 3000);
+        openPhoneModal('ship');
+        return;
+      }
+
+      renderGauStaffVisuals('pet');
+      const hands = [
+        document.getElementById('gau-pet-hand-indoor'),
+        document.getElementById('gau-pet-hand-garden')
+      ];
+      hands.forEach(h => {
+        if (!h) return;
+        h.classList.add('hidden');
+        void h.offsetWidth;
+        h.classList.remove('hidden');
+      });
+
+      clearTimeout(gauHappyTimerId);
+      gauHappyTimerId = setTimeout(() => {
+        hands.forEach(h => { if (h) h.classList.add('hidden'); });
+        if (activeDeliveries.length === 0) renderGauStaffVisuals('idle');
+      }, 1500);
+
+      // Kích hoạt Gấu Hăng Hái (-20% thời gian giao chuyến tiếp theo trong 60s)
+      const wasBoosted = isGauBoosted();
+      gauBoostUntil = Date.now() + 60000;
+      updateGauQuickButton();
+
+      playSfx('pet');
+      if (!gauPetCooldown) {
+        gauPetCooldown = true;
+        state.coins += 2;
+        addXp(3);
+        addQuestProgress('q_pet', 1);
+        saveState();
+        updateHud();
+        spawnFloatingParticle('28%', '64%', '💛 +2 🫘');
+        setTimeout(() => spawnFloatingParticle('29%', '57%', wasBoosted ? '🐶 ^◡^ Gâu!' : '⚡ Gấu Hăng Hái! -20% ship'), 170);
+        setTimeout(() => { gauPetCooldown = false; }, 2200);
+      } else {
+        spawnFloatingParticle('28%', '62%', '🐶 ^◡^ 💕');
+      }
+
+      const pendingCnt = pendingDeliveries.length;
+      const gauQuotes = pendingCnt > 0
+        ? [
+            `🐶 Bé Gấu vẫy đuôi tít mù: “Gâu~ sướng quá! Trên BAEOS có ${pendingCnt} đơn kìa, Gấu đang hăng hái giao nhanh -20% luôn nhé! ⚡”`,
+            `🐶 Bé Gấu: “Được xoa đầu có thêm 200% năng lượng rồi! Mở 📱 BAEOS để Gấu phóng đi ship ngay nha~ 🛵”`
+          ]
+        : [
+            '🐶 Bé Gấu cười tít mắt: “Gâu nhẹ~ được xoa đầu thích quá! Chuyến ship tới Gấu chạy nhanh hơn 20% luôn nha! ⚡”',
+            '🐶 Bé Gấu dụi mũi vào tay bạn: “Gấu trực sẵn ở góc quầy nè, có đơn RooShip là Gấu lên đường liền! 🐾”',
+            '🐶 Bé Gấu: “Cảm ơn chủ quán nha~ Gấu hứa ôm túi giao hàng thật êm không đổ giọt trà sữa nào luôn! 🧋💛”'
+          ];
+      const msg = gauQuotes[Math.floor(Math.random() * gauQuotes.length)];
+      const statusEl = document.getElementById('cafe-status-text');
+      if (statusEl) statusEl.textContent = msg;
+      if (isPhoneModalOpen() && activePhoneTab === 'ship') renderPhoneModal();
+    }
+
+    function interactWithGau() {
+      petGau();
+    }
+
     function spawnFloatingParticle(leftCss, topCss, text) {
       const layer = document.getElementById('particles-layer');
       if (!layer) return;
@@ -5000,6 +5106,10 @@
     }
 
     function animateWeatherCanvas() {
+      if (isGamePaused) {
+        weatherAnimId = null;
+        return;
+      }
       const canvas = document.getElementById('weather-canvas');
       if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -6120,6 +6230,7 @@
     }
 
     function playSfx(type) {
+      if (state && state.sfxEnabled === false) return;
       try {
         const ctx = ensureAudioContext();
         if (!ctx) return;
@@ -6353,11 +6464,15 @@
       const order = pendingDeliveries.splice(idx, 1)[0];
       const isFastAccept = Date.now() <= order.fastDeadline;
       const now = Date.now();
+      const boosted = isGauBoosted();
+      const shipDur = boosted ? Math.max(3000, Math.round(veh.durationMs * 0.8)) : veh.durationMs;
+      if (boosted) gauBoostUntil = 0; // Tiêu thụ buff Gấu Hăng Hái cho chuyến giao này
       activeDeliveries.push({
         ...order,
         isFastAccept,
+        gauBoosted: boosted,
         startedAt: now,
-        endsAt: now + veh.durationMs,
+        endsAt: now + shipDur,
         vehicleEmoji: veh.emoji
       });
 
@@ -6371,10 +6486,11 @@
         }, 1050);
       });
 
+      renderGauStaffVisuals('depart');
       playSfx('serve');
       updatePhoneIndicators();
       renderPhoneModal();
-      showToast(`${veh.emoji} Đã nhận đơn cho ${order.guest.name}! Đang giao tới ${order.place}...`, 'success', 2800);
+      showToast(`${veh.emoji} Bé Gấu đã nhận đơn của ${order.guest.name}${boosted ? ' (⚡ Hăng hái -20% giờ giao!)' : ''} và lên đường tới ${order.place}!`, boosted ? 'legendary' : 'success', 3200);
     }
 
     function completeDeliveryOrder(job) {
@@ -6426,17 +6542,21 @@
       });
 
       saveState();
+      renderGauStaffVisuals(activeDeliveries.length === 0 ? 'return' : 'away');
       playSfx(job.isVip ? 'legendary' : 'serve');
       updateHud();
       updatePhoneIndicators();
       if (isPhoneModalOpen()) renderPhoneModal();
 
-      showToast(`✅ Đã giao đơn cho ${job.guest.name} (+${totalEarned} 🫘) & nhận 1 đánh giá mới!`, job.isVip ? 'legendary' : 'success', 3800);
+      spawnFloatingParticle('28%', '64%', `🐶 Gấu về! +${totalEarned} 🫘`);
+      showToast(`✅ Bé Gấu đã giao xong cho ${job.guest.name} (+${totalEarned} 🫘) & nhận 1 đánh giá mới!`, job.isVip ? 'legendary' : 'success', 3800);
       const st = document.getElementById('cafe-status-text');
-      if (st) st.textContent = `🛵 RooShip vừa giao thành công tới ${job.place} cho ${job.guest.name} (+${totalEarned} 🫘)!`;
+      if (st) st.textContent = `🐶 Bé Gấu vừa giao đơn tới ${job.place} cho ${job.guest.name} (+${totalEarned} 🫘) rồi quay lại quán!`;
     }
 
     function tickDeliveries() {
+      if (isGamePaused) return;
+      updateGauQuickButton();
       const now = Date.now();
       if (activeDeliveries.length) {
         const finished = [];
@@ -6524,9 +6644,9 @@
           );
         }
         shipLines.push(
-          `Hôm nay bận việc ở ${place} không ghé quán được nên đặt ship ${itemNames}. Đóng gói kỹ, tem niêm phong chắc chắn, mở ra thơm lừng cả phòng!`,
-          `Ngồi ở ${place} thèm hương vị quán Roo quá nên đặt ${itemNames} qua RooShip — giao tới nơi vẫn giữ trọn vị ngon, rất đáng đồng tiền!`,
-          `Đặt giao ${itemNames} tới ${place} cho giờ nghỉ trưa, shipper dễ thương còn dặn uống ngon miệng nữa. Ưng cái bụng ghê!`
+          `Hôm nay bận việc ở ${place} không ghé quán được nên đặt ship ${itemNames}. Bé Gấu giao tới tận tay còn vẫy đuôi chúc ngon miệng, dễ thương xỉu! 🐶`,
+          `Ngồi ở ${place} thèm hương vị quán Roo quá nên đặt ${itemNames} — shipper Gấu đốm vàng chạy siêu cẩn thận, mở ra thơm lừng cả phòng!`,
+          `Đặt giao ${itemNames} tới ${place} cho giờ nghỉ trưa, chú chó đốm Gấu giao hàng vừa nhanh vừa lễ phép. Chấm 5 sao cho cả Roo lẫn Gấu! ⭐`
         );
         return shipLines[Math.floor(Math.random() * shipLines.length)];
       }
@@ -6672,14 +6792,14 @@
       if (iconEl) iconEl.textContent = first.vehicleEmoji || '🛵';
       if (txtEl) {
         txtEl.textContent = activeDeliveries.length > 1
-          ? `Đang giao ${activeDeliveries.length} đơn · ${first.guest.name} (${leftSec}s)`
-          : `Đang giao cho ${first.guest.name} · ${leftSec}s`;
+          ? `🐶 Gấu đang giao ${activeDeliveries.length} đơn · ${first.guest.name} (${leftSec}s)`
+          : `🐶 Gấu đang giao cho ${first.guest.name} · ${leftSec}s`;
       }
       if (banner) banner.classList.remove('hidden');
 
       // Live Activity trên Dynamic Island của BAEOS!
       if (islandTxt) {
-        islandTxt.textContent = `${first.vehicleEmoji || '🛵'} ${activeDeliveries.length > 1 ? `${activeDeliveries.length} đơn` : first.guest.name} · ${leftSec}s`;
+        islandTxt.textContent = `🐶 Gấu ${first.vehicleEmoji || '🛵'} ${activeDeliveries.length > 1 ? `${activeDeliveries.length} đơn` : first.guest.name} · ${leftSec}s`;
       }
       if (islandDot) islandDot.className = 'w-2 h-2 rounded-full bg-[#FFD60A] animate-pulse shrink-0';
     }
@@ -6748,13 +6868,30 @@
         const nextVeh = DELIVERY_VEHICLES.find(v => v.lv === veh.lv + 1);
         const now = Date.now();
 
+        const gauBusy = activeDeliveries.length > 0;
         const vehicleCard = `
-          <div class="p-3 rounded-2xl bg-paper border border-sage-border space-y-2">
+          <div class="p-3 rounded-2xl bg-paper border border-sage-border space-y-2.5">
+            <!-- Hồ sơ nhân viên Shipper: Bé Gấu -->
+            <div class="flex items-center gap-2.5 pb-2 border-b border-hairline/80">
+              <div class="w-12 h-12 rounded-2xl bg-[#FFF6E5] border border-honey-border flex items-center justify-center shrink-0 p-0.5">
+                ${getCachedStaticAvatarSvg('staff_gau', gauBusy ? 'idle' : 'happy')}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-1.5">
+                  <strong class="text-xs font-extrabold text-ink truncate">🐶 Bé Gấu · Shipper ROO</strong>
+                  <span class="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${gauBusy ? 'bg-honey-soft text-honey-text border border-honey-border' : 'bg-sage-soft text-sage-text border border-sage-border'}">
+                    ${gauBusy ? '🛵 Đang đi giao' : '🟢 Đang trực tại quán'}
+                  </span>
+                </div>
+                <p class="text-[10px] ${isGauBoosted() ? 'text-honey-text font-bold' : 'text-muted'} mt-0.5 leading-snug">${isGauBoosted() ? '⚡ Đang Hăng Hái sau khi được xoa đầu: chuyến ship tới nhanh hơn 20%!' : 'Chó đốm mặt vàng chăm chỉ — xoa đầu Gấu ngoài quán để giao nhanh -20%!'}</p>
+              </div>
+            </div>
+            <!-- Phương tiện của Gấu -->
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2 min-w-0">
-                <span class="w-9 h-9 rounded-xl bg-sage-soft border border-sage-border flex items-center justify-center text-lg shrink-0">${veh.emoji}</span>
+                <span class="w-8 h-8 rounded-xl bg-sage-soft border border-sage-border flex items-center justify-center text-base shrink-0">${veh.emoji}</span>
                 <div class="min-w-0">
-                  <strong class="block text-xs font-extrabold text-ink truncate">${escapeHtml(veh.name)} (Lv.${veh.lv}/3)</strong>
+                  <strong class="block text-[11px] font-extrabold text-ink truncate">${escapeHtml(veh.name)} (Lv.${veh.lv}/3)</strong>
                   <span class="block text-[10px] text-sage-text font-semibold">${escapeHtml(veh.desc)}</span>
                 </div>
               </div>
@@ -6776,7 +6913,7 @@
                 return `
                   <div class="scroll-card p-3 rounded-2xl bg-sage-soft/65 border border-sage-border space-y-2">
                     <div class="flex items-center justify-between gap-2 text-xs">
-                      <strong class="font-bold text-ink truncate">${job.vehicleEmoji} Giao cho ${escapeHtml(job.guest.name)}</strong>
+                      <strong class="font-bold text-ink truncate">🐶 Gấu ${job.vehicleEmoji} → ${escapeHtml(job.guest.name)}</strong>
                       <span id="ship-eta-${job.id}" class="font-mono text-[10px] font-extrabold text-sage-text shrink-0">Còn ${leftSec}s</span>
                     </div>
                     <div class="text-[10px] text-muted truncate">📍 ${escapeHtml(job.place)} · ${job.items.map(i => `${i.emoji} ${i.name}`).join(' + ')}</div>
@@ -6827,7 +6964,7 @@
                     <button type="button" onclick="acceptDeliveryOrder('${o.id}')"
                       class="flex-1 py-2 px-3 rounded-xl bg-sage hover:bg-sage-hover text-white text-[11px] font-bold flex items-center justify-center gap-1.5">
                       <span>${veh.emoji}</span>
-                      <span>Nhận &amp; Pha Giao Ngay</span>
+                      <span>Nhờ Gấu Giao Ngay</span>
                     </button>
                     <button type="button" onclick="declineDeliveryOrder('${o.id}')" title="Bỏ qua đơn này"
                       class="px-2.5 py-2 rounded-xl bg-cream hover:bg-peach-soft border border-hairline text-[11px] font-bold text-muted hover:text-peach-text">✕</button>
@@ -8047,6 +8184,7 @@
       activeDeliveries = [];
       homeDeliveryCooldown = {};
       cafeVisitCooldown = {};
+      renderGauStaffVisuals('idle');
       currentZone = 'indoor';
       applyDecorVisuals();
       applyRooWardrobeVisuals();
@@ -8126,46 +8264,6 @@
     }
 
     function renderTitleScreenShowcase() {
-      // Bố trí toàn thân đủ 15 nhân vật (gồm Bé Phúc & Bé Bòa Siêu Đặc Biệt!) theo 3 lớp chiều sâu
-      const titleCastLayout = [
-        // Lớp hậu cảnh sân quán (scale 0.70 – 0.74)
-        { id: 'owl_indigo',    x: 312,  y: 422, scale: 0.70, flip: false, label: 'Cú Đêm Đọc Sách' },
-        { id: 'bear_latte',    x: 472,  y: 438, scale: 0.73, flip: false, label: 'Gấu Nâu Latte' },
-        { id: 'frog_matcha',   x: 810,  y: 438, scale: 0.73, flip: false, label: 'Ếch Xanh Matcha' },
-        { id: 'maneki_gold',   x: 964,  y: 422, scale: 0.70, flip: false, label: 'Mèo Thần Tài Vàng' },
-
-        // Lớp trung cảnh hai bên đường (scale 0.84 – 0.94)
-        { id: 'bunny_oat',     x: 174,  y: 484, scale: 0.84, flip: false, label: 'Thỏ Yến Mạch' },
-        { id: 'black_bean',    x: 320,  y: 520, scale: 0.82, flip: false, label: 'Bé Đậu Đen' },
-        { id: 'shiba_toast',   x: 928,  y: 528, scale: 0.85, flip: true,  label: 'Cún Shiba Bánh Mì' },
-        { id: 'cloud_dragon',  x: 1168, y: 540, scale: 0.94, flip: true,  label: 'Rồng Mây Pastel' },
-
-        // Lớp tiền cảnh nổi bật: Bé Phúc & Bé Bòa đứng cạnh nhau ngay tiền cảnh bên cạnh Bé Chó Roo & Bé Bò Sữa!
-        { id: 'cat_mochi',     x: 88,   y: 622, scale: 0.96, flip: false, label: 'Mèo Mochi Trắng' },
-        { id: 'pom_cowsap',    x: 218,  y: 636, scale: 0.96, flip: false, label: 'Phốc Cam COWSAP' },
-        { id: 'be_phuc',       x: 374,  y: 638, scale: 1.08, flip: false, label: 'Bé Phúc 💖' },
-        { id: 'be_boa',        x: 482,  y: 638, scale: 1.08, flip: false, label: 'Bé Bòa 💖' },
-        { id: 'roo',           x: 638,  y: 634, scale: 1.15, flip: false, label: 'Chủ quán Bé Chó Roo' },
-        { id: 'baby_cow',      x: 786,  y: 634, scale: 1.10, flip: true,  label: 'Bé Bò Sữa 💝' },
-        { id: 'capybara_yuzu', x: 1054, y: 636, scale: 1.00, flip: true,  label: 'Capybara Đội Quýt' }
-      ];
-
-      const stage = document.getElementById('title-cast-stage');
-      if (stage) {
-        stage.innerHTML = titleCastLayout.map((item, idx) => {
-          const sx = item.flip ? -item.scale : item.scale;
-          const sy = item.scale;
-          const inner = getFullBodyCharacterSvg(item.id, false, idx % 3 === 0 ? 'happy' : 'idle');
-          return `
-            <g transform="translate(${item.x}, ${item.y})" style="cursor: pointer;" onclick="hopTitleCharacter(this, '${item.id}', '${escapeHtml(item.label)}')">
-              <g class="title-char-inner" transform="scale(${sx}, ${sy}) translate(-80, -144)">
-                ${inner}
-              </g>
-            </g>
-          `;
-        }).join('');
-      }
-
       const hasSave = hasExistingProgress();
       const btnContinue = document.getElementById('btn-title-continue');
       const continueBadge = document.getElementById('title-continue-badge');
@@ -8180,7 +8278,7 @@
       } else {
         if (btnContinue) btnContinue.classList.add('hidden');
         if (btnNewLabel) btnNewLabel.textContent = 'CHẠM ĐỂ CHƠI!';
-        if (saveSub) saveSub.textContent = 'Đủ 15 nhân vật (có Bé Phúc & Bé Bòa 💖) · Chạm để làm quen!';
+        if (saveSub) saveSub.textContent = 'Tiệm cà phê nhỏ ấm cúng · Lưu tự động trên máy';
       }
       lucide.createIcons();
     }
@@ -8192,14 +8290,16 @@
         void inner.offsetWidth;
         inner.classList.add('anim-title-hop');
       }
-      playSfx(id === 'roo' || id === 'baby_cow' || id === 'be_phuc' || id === 'be_boa' ? 'legendary' : 'bell');
+      playSfx(id === 'roo' || id === 'staff_gau' || id === 'baby_cow' || id === 'be_phuc' || id === 'be_boa' ? 'legendary' : 'bell');
       const g = GUESTS.find(x => x.id === id);
       const line = id === 'roo'
-        ? '🐾 Bé Chó Roo: “Chào mừng cậu đến với ROO CAFE! Bấm CHẠM ĐỂ CHƠI để mở quán nhé!”'
-        : g
-          ? `${label}: ${getVariedGuestQuote(g)}`
-          : `${label} đang vẫy chào bạn!`;
-      showToast(line, (id === 'baby_cow' || id === 'be_phuc' || id === 'be_boa') ? 'legendary' : 'success', 3000);
+        ? '🐾 Bé Chó Roo: “Chào mừng cậu đến với RooCozy! Bấm CHẠM ĐỂ CHƠI để mở quán nhé!”'
+        : id === 'staff_gau'
+          ? '🐶 Shipper Bé Gấu: “Gâu~ Gấu đã sẵn sàng chạy ship RooShip cho quán rồi nè!”'
+          : g
+            ? `${label}: ${getVariedGuestQuote(g)}`
+            : `${label} đang vẫy chào bạn!`;
+      showToast(line, (id === 'staff_gau' || id === 'baby_cow' || id === 'be_phuc' || id === 'be_boa') ? 'legendary' : 'success', 3000);
     }
 
     function handleTitleNewGame() {
@@ -8250,7 +8350,174 @@
       showToast(mode === 'continue' ? '🏡 Chào mừng bạn trở lại tiệm RooCozy!' : '☕ Tiệm RooCozy đã mở cửa! Thử xoa đầu Roo nhé!', 'success', 3200);
     }
 
+    // =========================================================================
+    // 10. HỆ THỐNG TẠM DỪNG GAME (COZY PAUSE ENGINE) & PHÍM TẮT P / ESC
+    // =========================================================================
+    let isGamePaused = false;
+    let pausedAtTimestamp = 0;
+    let pomoWasRunningBeforePause = false;
+
+    function updatePauseModalUI() {
+      const lvEl = document.getElementById('pause-stat-lv');
+      const coinsEl = document.getElementById('pause-stat-coins');
+      const servedEl = document.getElementById('pause-stat-served');
+      const focusEl = document.getElementById('pause-stat-focus');
+      if (lvEl) lvEl.textContent = `Lv.${state.level}`;
+      if (coinsEl) coinsEl.textContent = `${state.coins} 🫘`;
+      if (servedEl) servedEl.textContent = `${state.totalServed} ly`;
+      if (focusEl) focusEl.textContent = `${state.totalFocusMinutes}p`;
+
+      const noteEl = document.getElementById('pause-live-note');
+      if (noteEl) {
+        const notes = [];
+        if (pomoWasRunningBeforePause) notes.push(`⏱️ Đã tạm giữ đồng hồ Pomodoro (${formatTimer(pomoSecondsLeft)})`);
+        if (activeDeliveries.length > 0) notes.push(`🐶 Đã tạm giữ ${activeDeliveries.length} đơn Bé Gấu đang giao`);
+        if (notes.length) {
+          noteEl.textContent = notes.join(' · ');
+          noteEl.classList.remove('hidden');
+        } else {
+          noteEl.classList.add('hidden');
+        }
+      }
+
+      const musStatus = document.getElementById('pause-music-status');
+      const musBtn = document.getElementById('pause-btn-music');
+      if (musStatus) musStatus.textContent = masterAudioOn ? 'Nhạc: Đang bật' : 'Nhạc: Đang tắt';
+      if (musBtn) {
+        musBtn.className = masterAudioOn
+          ? 'tactile py-2.5 px-3 rounded-2xl bg-sage-soft/75 hover:bg-sage-soft border border-sage-border text-xs font-bold text-sage-text flex items-center justify-center gap-1.5'
+          : 'tactile py-2.5 px-3 rounded-2xl bg-cream hover:bg-sage-soft/60 border border-hairline text-xs font-bold text-muted flex items-center justify-center gap-1.5';
+      }
+
+      const sfxOn = state.sfxEnabled !== false;
+      const sfxStatus = document.getElementById('pause-sfx-status');
+      const sfxBtn = document.getElementById('pause-btn-sfx');
+      if (sfxStatus) sfxStatus.textContent = sfxOn ? 'Hiệu ứng: Bật' : 'Hiệu ứng: Tắt';
+      if (sfxBtn) {
+        sfxBtn.className = sfxOn
+          ? 'tactile py-2.5 px-3 rounded-2xl bg-sage-soft/75 hover:bg-sage-soft border border-sage-border text-xs font-bold text-sage-text flex items-center justify-center gap-1.5'
+          : 'tactile py-2.5 px-3 rounded-2xl bg-cream hover:bg-sage-soft/60 border border-hairline text-xs font-bold text-muted flex items-center justify-center gap-1.5';
+      }
+
+      const hudIcon = document.getElementById('pause-hud-icon');
+      const hudLbl = document.getElementById('pause-hud-label');
+      if (hudIcon) hudIcon.setAttribute('data-lucide', isGamePaused ? 'play' : 'pause');
+      if (hudLbl) hudLbl.textContent = isGamePaused ? 'Tiếp tục' : 'Tạm dừng';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleSfxEnabled() {
+      state.sfxEnabled = state.sfxEnabled === false ? true : false;
+      saveState();
+      if (state.sfxEnabled) playSfx('bell');
+      updatePauseModalUI();
+    }
+
+    function pauseGame() {
+      if (!isInGame || isGamePaused) return;
+      isGamePaused = true;
+      pausedAtTimestamp = Date.now();
+      closeAllToolDrawers();
+      document.body.classList.add('game-paused');
+
+      // Tự động tạm dừng Pomodoro nếu đang chạy để không bị trôi phút tập trung
+      pomoWasRunningBeforePause = pomoRunning;
+      if (pomoRunning) {
+        clearInterval(pomoIntervalId);
+        pomoRunning = false;
+        updatePomodoroUI();
+      }
+
+      if (weatherAnimId) {
+        cancelAnimationFrame(weatherAnimId);
+        weatherAnimId = null;
+      }
+
+      saveState();
+      updatePauseModalUI();
+      const modal = document.getElementById('pause-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function resumeGame() {
+      if (!isGamePaused) return;
+      const pauseDelta = Math.max(0, Date.now() - pausedAtTimestamp);
+      isGamePaused = false;
+      pausedAtTimestamp = 0;
+      document.body.classList.remove('game-paused');
+
+      // Dịch chuyển toàn bộ mốc thời gian đơn ship & cooldown để không bị thiệt thời gian lúc tạm dừng
+      if (pauseDelta > 0) {
+        activeDeliveries.forEach(job => {
+          job.startedAt += pauseDelta;
+          job.endsAt += pauseDelta;
+        });
+        pendingDeliveries.forEach(o => {
+          o.createdAt += pauseDelta;
+          o.fastDeadline += pauseDelta;
+        });
+        Object.keys(homeDeliveryCooldown).forEach(k => {
+          if (homeDeliveryCooldown[k] > 0) homeDeliveryCooldown[k] += pauseDelta;
+        });
+        Object.keys(cafeVisitCooldown).forEach(k => {
+          if (cafeVisitCooldown[k] > 0) cafeVisitCooldown[k] += pauseDelta;
+        });
+        if (gauBoostUntil > 0) gauBoostUntil += pauseDelta;
+        seats.forEach(s => {
+          if (s) {
+            if (s.arrivedAt) s.arrivedAt += pauseDelta;
+            if (s.orderedAt) s.orderedAt += pauseDelta;
+          }
+        });
+      }
+
+      const modal = document.getElementById('pause-modal');
+      if (modal) modal.classList.remove('open');
+
+      // Khởi động lại Pomodoro nếu trước khi pause đang chạy
+      if (pomoWasRunningBeforePause) {
+        pomoWasRunningBeforePause = false;
+        togglePomodoro();
+      }
+
+      if (!weatherAnimId) animateWeatherCanvas();
+      updateActiveShipBanner();
+      updateGauQuickButton();
+      updatePauseModalUI();
+      playSfx('bell');
+    }
+
+    function togglePauseGame() {
+      if (!isInGame) return;
+      if (isGamePaused) resumeGame();
+      else pauseGame();
+    }
+
+    function quickSaveFromPause() {
+      saveState();
+      playSfx('pet');
+      showToast('💾 Đã lưu toàn bộ tiến độ tiệm RooCozy an toàn!', 'success', 2600);
+    }
+
+    function exitToTitleFromPause() {
+      isGamePaused = false;
+      pomoWasRunningBeforePause = false;
+      document.body.classList.remove('game-paused');
+      const modal = document.getElementById('pause-modal');
+      if (modal) modal.classList.remove('open');
+      if (!weatherAnimId) animateWeatherCanvas();
+      updatePauseModalUI();
+      returnToTitleScreen();
+    }
+
     function returnToTitleScreen() {
+      if (isGamePaused) {
+        isGamePaused = false;
+        pomoWasRunningBeforePause = false;
+        document.body.classList.remove('game-paused');
+        const pm = document.getElementById('pause-modal');
+        if (pm) pm.classList.remove('open');
+      }
       isInGame = false;
       closeAllToolDrawers();
       renderTitleScreenShowcase();
@@ -8337,7 +8604,7 @@
 
       clearInterval(guestSpawnerId);
       guestSpawnerId = setInterval(() => {
-        if (!isInGame) return;
+        if (!isInGame || isGamePaused) return;
         const chance = getCafeArrivalChance(false);
         if (chance > 0 && Math.random() < chance) {
           spawnGuestInEmptySeat(null, true);
@@ -8346,7 +8613,7 @@
 
       clearInterval(autoServeTimerId);
       autoServeTimerId = setInterval(() => {
-        if (!pomoRunning) return;
+        if (!pomoRunning || isGamePaused) return;
         const waitMs = bellSpec.autoServeMs || 15000;
         const idx = seats.findIndex(s => s && (s.status === 'ordering' || s.status === 'second_order') && Date.now() - (s.orderedAt || s.arrivedAt) > waitMs);
         if (idx !== -1) serveSeat(idx);
@@ -8354,7 +8621,7 @@
 
       clearInterval(deliverySpawnerId);
       deliverySpawnerId = setInterval(() => {
-        if (!isInGame) return;
+        if (!isInGame || isGamePaused) return;
         if (pendingDeliveries.length >= 3) return;
         // Tỉ lệ đơn ship mới giảm dần khi đã có nhiều đơn chờ — tự nhiên, không dồn dập
         const baseShipChance = pendingDeliveries.length === 0 ? 0.50 : pendingDeliveries.length === 1 ? 0.32 : 0.18;
@@ -8388,12 +8655,48 @@
       // Chỉ mời khách ban đầu khi người chơi bấm vào quán (enterGame),
       // tránh ghi sớm vào dữ liệu lưu khiến màn hình chờ nhận nhầm người chơi mới.
       renderSeats();
+      renderGauStaffVisuals('idle');
 
       restartCafeLoops();
 
       window.addEventListener('resize', () => {
         resizeWeatherCanvas();
         initWeatherParticles();
+      });
+
+      const pauseBackdrop = document.getElementById('pause-modal');
+      if (pauseBackdrop) {
+        pauseBackdrop.addEventListener('click', (e) => {
+          if (e.target.id === 'pause-modal' && isGamePaused) resumeGame();
+        });
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (!isInGame) return;
+        const tag = (e.target && e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
+
+        if (e.key === 'Escape') {
+          if (isGamePaused) {
+            resumeGame();
+            return;
+          }
+          const openOtherModal = document.querySelector('.modal-backdrop.open:not(#pause-modal)');
+          if (openOtherModal) {
+            closeModal(openOtherModal.id);
+            return;
+          }
+          if (activeToolDrawer) {
+            closeAllToolDrawers();
+            return;
+          }
+          pauseGame();
+        } else if (e.key === 'p' || e.key === 'P') {
+          const openOtherModal = document.querySelector('.modal-backdrop.open:not(#pause-modal)');
+          if (!openOtherModal) {
+            togglePauseGame();
+          }
+        }
       });
 
       if (weatherAnimId) cancelAnimationFrame(weatherAnimId);

@@ -4,7 +4,7 @@
   "description": "Tiệm cà phê nhỏ ấm cúng & Góc học tập Pomodoro từ BlackBean Studio (CEO baebless).",
   "start_url": "./roocozy.html",
   "display": "standalone",
-  "background_color": "#F4F1EA",
+  "background_color": "#FCF9F3",
   "theme_color": "#4E6E5D",
   "orientation": "landscape",
   "icons": [
