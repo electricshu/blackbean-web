@@ -1,12 +1,10 @@
 {
-  "name": "ROO – My Little Café (RooCozy)",
+  "name": "RooCozy — Cozy Cafe & Focus Space | BlackBean Studio",
   "short_name": "RooCozy",
-  "description": "Tiệm cà phê nhỏ ấm cúng & Góc học tập Pomodoro từ BlackBean Studio (CEO baebless).",
-  "start_url": "./roocozy.html",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FCF9F3",
+  "background_color": "#F7F6F2",
   "theme_color": "#4E6E5D",
-  "orientation": "landscape",
   "icons": [
     {
       "src": "icon.png",
